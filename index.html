@@ -234,6 +234,12 @@
             line-height: 1.6;
         }
 
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
         @media (max-width: 600px) {
             .container { padding: 20px; }
             .header h1 { font-size: 24px; }
@@ -252,7 +258,7 @@
 
         <div id="setupWarning" class="alert alert-error" style="display: none;">
             <strong>⚠️ Sistem Kurulumu Gerekli</strong><br>
-            Lütfen admin panelinden Apps Script URL'ini ayarlayın.
+            Lütfen Apps Script URL'ini kontrol edin.
         </div>
 
         <div class="section">
@@ -264,6 +270,7 @@
 
         <div class="section" id="staffSection" style="display: none;">
             <div class="section-title">👥 Çalışan Seçin</div>
+            <div id="staffLoading" class="loading" style="display: none;">Yükleniyor...</div>
             <div class="staff-select" id="staffList"></div>
         </div>
 
@@ -302,9 +309,11 @@
     </div>
 
     <script>
+        // ============ KONFİGÜRASYON ============
         const CONFIG = {
-            APPS_SCRIPT_URL: localStorage.getItem('appsScriptUrl') ||
-  'https://script.google.com/macros/s/AKfycbx0ai2W6n_JtvWdme7GrY5pNXs9NHaAFnXdxrvAGHdHKk-YcNSTAzZIPcVkjv3FBT3d/exec',
+            // BURAYA APPS SCRIPT URL'İNİZİ YAPIŞTIRIN
+            APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwyrHLEnkv-yp8HjwXrRivuiZ0GAuRIQ89SPnf7JD7fxqegOnOm_NoSeSd5WV_5Nk0u/exec',
+            
             SHIFTS: {
                 'morning': { start: 10, end: 18, label: 'Sabah (10:00-18:00)' },
                 'evening': { start: 14, end: 22, label: 'Akşam (14:00-22:00)' },
@@ -313,86 +322,122 @@
             APPOINTMENT_HOURS: {
                 earliest: 11,
                 latest: 21,
-                interval: parseInt(localStorage.getItem('interval')) || 60
+                interval: 60 // Dakika cinsinden
             },
-            MAX_DAILY_APPOINTMENTS: parseInt(localStorage.getItem('maxDaily')) || 4
+            MAX_DAILY_APPOINTMENTS: 50 // Günlük maksimum randevu sayısı
         };
 
+        // ============ GLOBAL DEĞİŞKENLER ============
         let selectedDate = null;
         let selectedStaff = null;
         let selectedTime = null;
         let selectedShiftType = null;
         let staffMembers = [];
+        let dayShifts = {};
         let existingAppointments = [];
 
+        // ============ SAYFA YÜKLENDİĞİNDE ============
         document.addEventListener('DOMContentLoaded', function() {
-            if (!CONFIG.APPS_SCRIPT_URL) {
+            if (!CONFIG.APPS_SCRIPT_URL || CONFIG.APPS_SCRIPT_URL.includes('YOUR_SCRIPT_URL')) {
                 document.getElementById('setupWarning').style.display = 'block';
                 return;
             }
 
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('appointmentDate').min = today;
+            
+            // İlk yüklemede çalışanları getir
             loadStaffMembers();
         });
 
-        function loadStaffMembers() {
-            const stored = localStorage.getItem('staffMembers');
-            staffMembers = stored ? JSON.parse(stored) : [
-                { id: 1, name: 'Çalışan 1', active: true },
-                { id: 2, name: 'Çalışan 2', active: true },
-                { id: 3, name: 'Çalışan 3', active: true },
-                { id: 4, name: 'Çalışan 4', active: true },
-                { id: 5, name: 'Çalışan 5', active: true },
-                { id: 6, name: 'Çalışan 6', active: true }
-            ];
-        }
-
-        document.getElementById('appointmentDate').addEventListener('change', async function(e) {
-            selectedDate = e.target.value;
-            if (!selectedDate) return;
-
-            showAlert('Müsait zamanlar yükleniyor...', 'info');
-            await loadAppointmentsForDate(selectedDate);
-            displayAvailableStaff(selectedDate);
-
-            document.getElementById('staffSection').style.display = 'block';
-            document.getElementById('timeSection').style.display = 'none';
-            document.getElementById('detailsSection').style.display = 'none';
-            document.getElementById('submitBtn').style.display = 'none';
-            hideAlert();
-        });
-
-        function loadAppointmentsForDate(date) {
-            return new Promise((resolve) => {
+        // ============ API ÇAĞRILARFetch: fetch veya JSONP ============
+        function apiCall(action, params = {}) {
+            return new Promise((resolve, reject) => {
                 const callback = 'cb_' + Date.now();
+                const allParams = { ...params, action, callback };
+                const url = CONFIG.APPS_SCRIPT_URL + '?' + new URLSearchParams(allParams).toString();
+                
                 window[callback] = function(data) {
-                    existingAppointments = data.items || [];
                     delete window[callback];
-                    document.getElementById('jsonpScript')?.remove();
-                    resolve();
+                    document.getElementById('jsonpScript_' + callback)?.remove();
+                    resolve(data);
                 };
 
                 const script = document.createElement('script');
-                script.id = 'jsonpScript';
-                script.src = `${CONFIG.APPS_SCRIPT_URL}?action=getAppointments&date=${date}&callback=${callback}`;
+                script.id = 'jsonpScript_' + callback;
+                script.src = url;
                 script.onerror = () => {
-                    showAlert('Randevular yüklenemedi. Apps Script URL kontrol edin.', 'error');
-                    existingAppointments = [];
                     delete window[callback];
-                    resolve();
+                    reject(new Error('API çağrısı başarısız'));
                 };
                 document.body.appendChild(script);
             });
         }
 
-        function displayAvailableStaff(date) {
+        // ============ ÇALIŞANLARI YÜKLEDisplayAvailableStaff ============
+        async function loadStaffMembers() {
+            try {
+                const response = await apiCall('getStaff');
+                if (response.success) {
+                    staffMembers = response.data;
+                    console.log('Çalışanlar yüklendi:', staffMembers);
+                } else {
+                    console.error('Çalışanlar yüklenemedi:', response.error);
+                    showAlert('⚠️ Çalışanlar yüklenemedi: ' + response.error, 'error');
+                }
+            } catch (error) {
+                console.error('API hatası:', error);
+                showAlert('⚠️ Bağlantı hatası. Apps Script URL'ini kontrol edin.', 'error');
+            }
+        }
+
+        // ============ TARİH SEÇİMİ ============
+        document.getElementById('appointmentDate').addEventListener('change', async function(e) {
+            selectedDate = e.target.value;
+            if (!selectedDate) return;
+
+            showAlert('Müsait zamanlar yükleniyor...', 'info');
+            
+            try {
+                // Vardiyaları ve randevuları paralel yükle
+                const [shiftsResult, appointmentsResult] = await Promise.all([
+                    apiCall('getShifts', { date: selectedDate }),
+                    apiCall('getAppointments', { date: selectedDate })
+                ]);
+
+                if (shiftsResult.success) {
+                    dayShifts = shiftsResult.data;
+                }
+
+                if (appointmentsResult.success) {
+                    existingAppointments = appointmentsResult.items || [];
+                }
+
+                displayAvailableStaff();
+                document.getElementById('staffSection').style.display = 'block';
+                document.getElementById('timeSection').style.display = 'none';
+                document.getElementById('detailsSection').style.display = 'none';
+                document.getElementById('submitBtn').style.display = 'none';
+                hideAlert();
+            } catch (error) {
+                console.error('Veri yükleme hatası:', error);
+                showAlert('⚠️ Veriler yüklenemedi.', 'error');
+            }
+        });
+
+        // ============ MÜSAİT ÇALIŞANLARI GÖSTER ============
+        function displayAvailableStaff() {
             const staffList = document.getElementById('staffList');
             staffList.innerHTML = '';
-            const dayShifts = getShiftsForDate(date);
+
+            if (staffMembers.length === 0) {
+                staffList.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #dc3545;">Henüz çalışan eklenmemiş.</div>';
+                return;
+            }
 
             staffMembers.forEach(staff => {
                 if (!staff.active) return;
+                
                 const shiftType = dayShifts[staff.id];
                 const isWorking = !!shiftType;
 
@@ -415,16 +460,7 @@
             });
         }
 
-        function getShiftsForDate(date) {
-            const shifts = localStorage.getItem('dateBasedShifts');
-            if (!shifts) {
-                const defaultShifts = {};
-                staffMembers.forEach(s => { defaultShifts[s.id] = 'full'; });
-                return defaultShifts;
-            }
-            return JSON.parse(shifts)[date] || {};
-        }
-
+        // ============ ÇALIŞAN SEÇİMİ ============
         function selectStaff(staffId, shiftType) {
             selectedStaff = staffId;
             selectedShiftType = shiftType;
@@ -438,6 +474,7 @@
             document.getElementById('submitBtn').style.display = 'none';
         }
 
+        // ============ MÜSAİT SAATLERİ GÖSTER ============
         function displayAvailableTimeSlots() {
             const container = document.getElementById('timeSlots');
             container.innerHTML = '';
@@ -457,6 +494,7 @@
             for (let hour = startHour; hour < endHour; hour++) {
                 for (let minute = 0; minute < 60; minute += interval) {
                     const timeStr = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+                    
                     const isBooked = existingAppointments.some(apt => {
                         if (!apt.start?.dateTime) return false;
                         const t = new Date(apt.start.dateTime);
@@ -477,6 +515,7 @@
             }
         }
 
+        // ============ SAAT SEÇİMİ ============
         function selectTimeSlot(timeStr, element) {
             selectedTime = timeStr;
             document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
@@ -486,7 +525,8 @@
             document.getElementById('submitBtn').style.display = 'block';
         }
 
-        document.getElementById('submitBtn').addEventListener('click', function() {
+        // ============ RANDEVU OLUŞTUR ============
+        document.getElementById('submitBtn').addEventListener('click', async function() {
             const name = document.getElementById('customerName').value.trim();
             const phone = document.getElementById('customerPhone').value.trim();
             const email = document.getElementById('customerEmail').value.trim();
@@ -507,48 +547,37 @@
             btn.textContent = 'Randevu oluşturuluyor...';
 
             const staff = staffMembers.find(s => s.id === selectedStaff);
-            const callback = 'create_' + Date.now();
 
-            window[callback] = function(data) {
-                if (data.success) {
+            try {
+                const result = await apiCall('createAppointment', {
+                    date: selectedDate,
+                    time: selectedTime,
+                    staffId: selectedStaff,
+                    staffName: staff.name,
+                    customerName: name,
+                    customerPhone: phone,
+                    customerEmail: email,
+                    customerNote: note,
+                    shiftType: selectedShiftType,
+                    duration: CONFIG.APPOINTMENT_HOURS.interval
+                });
+
+                if (result.success) {
                     showAlert('✅ Randevunuz başarıyla oluşturuldu!', 'success');
                     setTimeout(() => location.reload(), 3000);
                 } else {
-                    showAlert('❌ ' + (data.error || 'Randevu oluşturulamadı'), 'error');
+                    showAlert('❌ ' + (result.error || 'Randevu oluşturulamadı'), 'error');
                     btn.disabled = false;
                     btn.textContent = 'Randevuyu Onayla';
                 }
-                delete window[callback];
-                document.getElementById('createScript')?.remove();
-            };
-
-            const params = new URLSearchParams({
-                action: 'createAppointment',
-                callback: callback,
-                date: selectedDate,
-                time: selectedTime,
-                staffId: selectedStaff,
-                staffName: staff.name,
-                customerName: name,
-                customerPhone: phone,
-                customerEmail: email,
-                customerNote: note,
-                shiftType: selectedShiftType,
-                duration: CONFIG.APPOINTMENT_HOURS.interval
-            });
-
-            const script = document.createElement('script');
-            script.id = 'createScript';
-            script.src = `${CONFIG.APPS_SCRIPT_URL}?${params.toString()}`;
-            script.onerror = () => {
-                showAlert('❌ Randevu oluşturulamadı.', 'error');
+            } catch (error) {
+                showAlert('❌ Randevu oluşturulamadı: ' + error.message, 'error');
                 btn.disabled = false;
                 btn.textContent = 'Randevuyu Onayla';
-                delete window[callback];
-            };
-            document.body.appendChild(script);
+            }
         });
 
+        // ============ YARDIMCI FONKSİYONLAR ============
         function showAlert(message, type) {
             document.getElementById('alertContainer').innerHTML = `<div class="alert alert-${type}">${message}</div>`;
         }
