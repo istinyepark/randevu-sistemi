@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Randevu Al</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .available-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .slot-btn {
+            padding: 12px;
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .slot-btn:hover {
+            background: #e8e8ff;
+            border-color: #667eea;
+        }
+
+        .slot-btn.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .slot-btn.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            background: #fafafa;
+        }
+
+        .slot-btn.disabled:hover {
+            background: #fafafa;
+            border-color: #e0e0e0;
+        }
+
+        .staff-select {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .staff-card {
+            padding: 15px;
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .staff-card:hover {
+            background: #e8e8ff;
+            border-color: #667eea;
+        }
+
+        .staff-card.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .staff-card.unavailable {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .staff-card.unavailable:hover {
+            background: #f5f5f5;
+            border-color: #e0e0e0;
+        }
+
+        .staff-name {
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-box p {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 20px; }
+            .header h1 { font-size: 24px; }
+            .available-slots { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📅 Online Randevu</h1>
+            <p>Müsait bir zaman seçin ve randevunuzu oluşturun</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <div id="setupWarning" class="alert alert-error" style="display: none;">
+            <strong>⚠️ Sistem Kurulumu Gerekli</strong><br>
+            Lütfen admin panelinden Apps Script URL'ini ayarlayın.
+        </div>
+
+        <div class="section">
+            <div class="section-title">📆 Tarih Seçin</div>
+            <div class="input-group">
+                <input type="date" id="appointmentDate" required>
+            </div>
+        </div>
+
+        <div class="section" id="staffSection" style="display: none;">
+            <div class="section-title">👥 Çalışan Seçin</div>
+            <div class="staff-select" id="staffList"></div>
+        </div>
+
+        <div class="section" id="timeSection" style="display: none;">
+            <div class="section-title">🕐 Saat Seçin</div>
+            <div class="available-slots" id="timeSlots"></div>
+        </div>
+
+        <div class="section" id="detailsSection" style="display: none;">
+            <div class="section-title">📝 Bilgileriniz</div>
+            <div class="input-group">
+                <label for="customerName">Adınız Soyadınız *</label>
+                <input type="text" id="customerName" placeholder="Örn: Ahmet Yılmaz" required>
+            </div>
+            <div class="input-group">
+                <label for="customerPhone">Telefon *</label>
+                <input type="tel" id="customerPhone" placeholder="0555 123 45 67" required>
+            </div>
+            <div class="input-group">
+                <label for="customerEmail">E-posta (İsteğe bağlı)</label>
+                <input type="email" id="customerEmail" placeholder="ornek@email.com">
+            </div>
+            <div class="input-group">
+                <label for="customerNote">Not (İsteğe bağlı)</label>
+                <textarea id="customerNote" placeholder="Randevu ile ilgili eklemek istediğiniz bir not varsa..."></textarea>
+            </div>
+        </div>
+
+        <button class="btn" id="submitBtn" style="display: none;">
+            Randevuyu Onayla
+        </button>
+
+        <div class="info-box">
+            <p><strong>ℹ️ Bilgilendirme:</strong> Randevunuz onaylandıktan sonra size SMS ve e-posta ile bilgilendirme yapılacaktır.</p>
+        </div>
+    </div>
+
+    <script>
+        const CONFIG = {
+            APPS_SCRIPT_URL: localStorage.getItem('appsScriptUrl') || '',
+            SHIFTS: {
+                'morning': { start: 10, end: 18, label: 'Sabah (10:00-18:00)' },
+                'evening': { start: 14, end: 22, label: 'Akşam (14:00-22:00)' },
+                'full': { start: 10, end: 22, label: 'Full (10:00-22:00)' }
+            },
+            APPOINTMENT_HOURS: {
+                earliest: 11,
+                latest: 21,
+                interval: parseInt(localStorage.getItem('interval')) || 60
+            },
+            MAX_DAILY_APPOINTMENTS: parseInt(localStorage.getItem('maxDaily')) || 4
+        };
+
+        let selectedDate = null;
+        let selectedStaff = null;
+        let selectedTime = null;
+        let selectedShiftType = null;
+        let staffMembers = [];
+        let existingAppointments = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!CONFIG.APPS_SCRIPT_URL) {
+                document.getElementById('setupWarning').style.display = 'block';
+                return;
+            }
+
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('appointmentDate').min = today;
+            loadStaffMembers();
+        });
+
+        function loadStaffMembers() {
+            const stored = localStorage.getItem('staffMembers');
+            staffMembers = stored ? JSON.parse(stored) : [
+                { id: 1, name: 'Çalışan 1', active: true },
+                { id: 2, name: 'Çalışan 2', active: true },
+                { id: 3, name: 'Çalışan 3', active: true },
+                { id: 4, name: 'Çalışan 4', active: true },
+                { id: 5, name: 'Çalışan 5', active: true },
+                { id: 6, name: 'Çalışan 6', active: true }
+            ];
+        }
+
+        document.getElementById('appointmentDate').addEventListener('change', async function(e) {
+            selectedDate = e.target.value;
+            if (!selectedDate) return;
+
+            showAlert('Müsait zamanlar yükleniyor...', 'info');
+            await loadAppointmentsForDate(selectedDate);
+            displayAvailableStaff(selectedDate);
+
+            document.getElementById('staffSection').style.display = 'block';
+            document.getElementById('timeSection').style.display = 'none';
+            document.getElementById('detailsSection').style.display = 'none';
+            document.getElementById('submitBtn').style.display = 'none';
+            hideAlert();
+        });
+
+        function loadAppointmentsForDate(date) {
+            return new Promise((resolve) => {
+                const callback = 'cb_' + Date.now();
+                window[callback] = function(data) {
+                    existingAppointments = data.items || [];
+                    delete window[callback];
+                    document.getElementById('jsonpScript')?.remove();
+                    resolve();
+                };
+
+                const script = document.createElement('script');
+                script.id = 'jsonpScript';
+                script.src = `${CONFIG.APPS_SCRIPT_URL}?action=getAppointments&date=${date}&callback=${callback}`;
+                script.onerror = () => {
+                    showAlert('Randevular yüklenemedi. Apps Script URL kontrol edin.', 'error');
+                    existingAppointments = [];
+                    delete window[callback];
+                    resolve();
+                };
+                document.body.appendChild(script);
+            });
+        }
+
+        function displayAvailableStaff(date) {
+            const staffList = document.getElementById('staffList');
+            staffList.innerHTML = '';
+            const dayShifts = getShiftsForDate(date);
+
+            staffMembers.forEach(staff => {
+                if (!staff.active) return;
+                const shiftType = dayShifts[staff.id];
+                const isWorking = !!shiftType;
+
+                const card = document.createElement('div');
+                card.className = `staff-card ${!isWorking ? 'unavailable' : ''}`;
+                const label = isWorking && CONFIG.SHIFTS[shiftType] ? CONFIG.SHIFTS[shiftType].label : 'İzinli';
+
+                card.innerHTML = `
+                    <div class="staff-name">${staff.name}</div>
+                    <div style="font-size: 12px; margin-top: 5px; color: ${isWorking ? '#28a745' : '#dc3545'}">
+                        ${isWorking ? '✓ ' + label : '✗ ' + label}
+                    </div>
+                `;
+
+                if (isWorking) {
+                    card.addEventListener('click', () => selectStaff(staff.id, shiftType));
+                }
+
+                staffList.appendChild(card);
+            });
+        }
+
+        function getShiftsForDate(date) {
+            const shifts = localStorage.getItem('dateBasedShifts');
+            if (!shifts) {
+                const defaultShifts = {};
+                staffMembers.forEach(s => { defaultShifts[s.id] = 'full'; });
+                return defaultShifts;
+            }
+            return JSON.parse(shifts)[date] || {};
+        }
+
+        function selectStaff(staffId, shiftType) {
+            selectedStaff = staffId;
+            selectedShiftType = shiftType;
+
+            document.querySelectorAll('.staff-card').forEach(c => c.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+
+            displayAvailableTimeSlots();
+            document.getElementById('timeSection').style.display = 'block';
+            document.getElementById('detailsSection').style.display = 'none';
+            document.getElementById('submitBtn').style.display = 'none';
+        }
+
+        function displayAvailableTimeSlots() {
+            const container = document.getElementById('timeSlots');
+            container.innerHTML = '';
+
+            if (existingAppointments.length >= CONFIG.MAX_DAILY_APPOINTMENTS) {
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #dc3545;">⚠️ Bu gün için tüm randevular dolu.</div>';
+                return;
+            }
+
+            const shift = CONFIG.SHIFTS[selectedShiftType];
+            if (!shift) return;
+
+            const { earliest, latest, interval } = CONFIG.APPOINTMENT_HOURS;
+            const startHour = Math.max(shift.start, earliest);
+            const endHour = Math.min(shift.end, latest);
+
+            for (let hour = startHour; hour < endHour; hour++) {
+                for (let minute = 0; minute < 60; minute += interval) {
+                    const timeStr = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+                    const isBooked = existingAppointments.some(apt => {
+                        if (!apt.start?.dateTime) return false;
+                        const t = new Date(apt.start.dateTime);
+                        const aptTime = `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`;
+                        return aptTime === timeStr && parseInt(apt.extendedProperties?.private?.staffId) === selectedStaff;
+                    });
+
+                    const btn = document.createElement('div');
+                    btn.className = `slot-btn ${isBooked ? 'disabled' : ''}`;
+                    btn.textContent = timeStr;
+
+                    if (!isBooked) {
+                        btn.addEventListener('click', () => selectTimeSlot(timeStr, btn));
+                    }
+
+                    container.appendChild(btn);
+                }
+            }
+        }
+
+        function selectTimeSlot(timeStr, element) {
+            selectedTime = timeStr;
+            document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
+            element.classList.add('selected');
+
+            document.getElementById('detailsSection').style.display = 'block';
+            document.getElementById('submitBtn').style.display = 'block';
+        }
+
+        document.getElementById('submitBtn').addEventListener('click', function() {
+            const name = document.getElementById('customerName').value.trim();
+            const phone = document.getElementById('customerPhone').value.trim();
+            const email = document.getElementById('customerEmail').value.trim();
+            const note = document.getElementById('customerNote').value.trim();
+
+            if (!selectedDate || !selectedStaff || !selectedTime) {
+                showAlert('Lütfen tarih, çalışan ve saat seçin.', 'error');
+                return;
+            }
+
+            if (!name || !phone) {
+                showAlert('Lütfen ad ve telefon bilgilerinizi girin.', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.textContent = 'Randevu oluşturuluyor...';
+
+            const staff = staffMembers.find(s => s.id === selectedStaff);
+            const callback = 'create_' + Date.now();
+
+            window[callback] = function(data) {
+                if (data.success) {
+                    showAlert('✅ Randevunuz başarıyla oluşturuldu!', 'success');
+                    setTimeout(() => location.reload(), 3000);
+                } else {
+                    showAlert('❌ ' + (data.error || 'Randevu oluşturulamadı'), 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'Randevuyu Onayla';
+                }
+                delete window[callback];
+                document.getElementById('createScript')?.remove();
+            };
+
+            const params = new URLSearchParams({
+                action: 'createAppointment',
+                callback: callback,
+                date: selectedDate,
+                time: selectedTime,
+                staffId: selectedStaff,
+                staffName: staff.name,
+                customerName: name,
+                customerPhone: phone,
+                customerEmail: email,
+                customerNote: note,
+                shiftType: selectedShiftType,
+                duration: CONFIG.APPOINTMENT_HOURS.interval
+            });
+
+            const script = document.createElement('script');
+            script.id = 'createScript';
+            script.src = `${CONFIG.APPS_SCRIPT_URL}?${params.toString()}`;
+            script.onerror = () => {
+                showAlert('❌ Randevu oluşturulamadı.', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Randevuyu Onayla';
+                delete window[callback];
+            };
+            document.body.appendChild(script);
+        });
+
+        function showAlert(message, type) {
+            document.getElementById('alertContainer').innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+        }
+
+        function hideAlert() {
+            document.getElementById('alertContainer').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
