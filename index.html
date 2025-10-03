@@ -256,11 +256,6 @@
 
         <div id="alertContainer"></div>
 
-        <div id="setupWarning" class="alert alert-error" style="display: none;">
-            <strong>⚠️ Sistem Kurulumu Gerekli</strong><br>
-            Lütfen Apps Script URL'ini kontrol edin.
-        </div>
-
         <div class="section">
             <div class="section-title">📆 Tarih Seçin</div>
             <div class="input-group">
@@ -309,25 +304,23 @@
     </div>
 
     <script>
-        // ============ KONFİGÜRASYON ============
+        // APPS SCRIPT URL - Buraya kendi URL'inizi yapiştirin
         const CONFIG = {
-            // BURAYA APPS SCRIPT URL'İNİZİ YAPIŞTIRIN
             APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwyrHLEnkv-yp8HjwXrRivuiZ0GAuRIQ89SPnf7JD7fxqegOnOm_NoSeSd5WV_5Nk0u/exec',
             
             SHIFTS: {
                 'morning': { start: 10, end: 18, label: 'Sabah (10:00-18:00)' },
-                'evening': { start: 14, end: 22, label: 'Akşam (14:00-22:00)' },
+                'evening': { start: 14, end: 22, label: 'Aksam (14:00-22:00)' },
                 'full': { start: 10, end: 22, label: 'Full (10:00-22:00)' }
             },
             APPOINTMENT_HOURS: {
                 earliest: 11,
                 latest: 21,
-                interval: 60 // Dakika cinsinden
+                interval: 60
             },
-            MAX_DAILY_APPOINTMENTS: 50 // Günlük maksimum randevu sayısı
+            MAX_DAILY_APPOINTMENTS: 50
         };
 
-        // ============ GLOBAL DEĞİŞKENLER ============
         let selectedDate = null;
         let selectedStaff = null;
         let selectedTime = null;
@@ -336,21 +329,12 @@
         let dayShifts = {};
         let existingAppointments = [];
 
-        // ============ SAYFA YÜKLENDİĞİNDE ============
         document.addEventListener('DOMContentLoaded', function() {
-            if (!CONFIG.APPS_SCRIPT_URL || CONFIG.APPS_SCRIPT_URL.includes('YOUR_SCRIPT_URL')) {
-                document.getElementById('setupWarning').style.display = 'block';
-                return;
-            }
-
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('appointmentDate').min = today;
-            
-            // İlk yüklemede çalışanları getir
             loadStaffMembers();
         });
 
-        // ============ API ÇAĞRILARFetch: fetch veya JSONP ============
         function apiCall(action, params = {}) {
             return new Promise((resolve, reject) => {
                 const callback = 'cb_' + Date.now();
@@ -368,38 +352,35 @@
                 script.src = url;
                 script.onerror = () => {
                     delete window[callback];
-                    reject(new Error('API çağrısı başarısız'));
+                    reject(new Error('API cagrisi basarisiz'));
                 };
                 document.body.appendChild(script);
             });
         }
 
-        // ============ ÇALIŞANLARI YÜKLEDisplayAvailableStaff ============
         async function loadStaffMembers() {
             try {
                 const response = await apiCall('getStaff');
                 if (response.success) {
                     staffMembers = response.data;
-                    console.log('Çalışanlar yüklendi:', staffMembers);
+                    console.log('Calisanlar yuklendi:', staffMembers);
                 } else {
-                    console.error('Çalışanlar yüklenemedi:', response.error);
-                    showAlert('⚠️ Çalışanlar yüklenemedi: ' + response.error, 'error');
+                    console.error('Calisanlar yuklenemedi:', response.error);
+                    showAlert('Calisanlar yuklenemedi: ' + response.error, 'error');
                 }
             } catch (error) {
-                console.error('API hatası:', error);
-                showAlert('⚠️ Bağlantı hatası. Apps Script URL ini kontrol edin.', 'error');
+                console.error('API hatasi:', error);
+                showAlert('Baglanti hatasi. Apps Script URL kontrol edin.', 'error');
             }
         }
 
-        // ============ TARİH SEÇİMİ ============
         document.getElementById('appointmentDate').addEventListener('change', async function(e) {
             selectedDate = e.target.value;
             if (!selectedDate) return;
 
-            showAlert('Müsait zamanlar yükleniyor...', 'info');
+            showAlert('Musait zamanlar yukleniyor...', 'info');
             
             try {
-                // Vardiyaları ve randevuları paralel yükle
                 const [shiftsResult, appointmentsResult] = await Promise.all([
                     apiCall('getShifts', { date: selectedDate }),
                     apiCall('getAppointments', { date: selectedDate })
@@ -420,18 +401,17 @@
                 document.getElementById('submitBtn').style.display = 'none';
                 hideAlert();
             } catch (error) {
-                console.error('Veri yükleme hatası:', error);
-                showAlert('⚠️ Veriler yüklenemedi.', 'error');
+                console.error('Veri yukleme hatasi:', error);
+                showAlert('Veriler yuklenemedi.', 'error');
             }
         });
 
-        // ============ MÜSAİT ÇALIŞANLARI GÖSTER ============
         function displayAvailableStaff() {
             const staffList = document.getElementById('staffList');
             staffList.innerHTML = '';
 
             if (staffMembers.length === 0) {
-                staffList.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #dc3545;">Henüz çalışan eklenmemiş.</div>';
+                staffList.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #dc3545;">Henuz calisan eklenmemis.</div>';
                 return;
             }
 
@@ -442,15 +422,13 @@
                 const isWorking = !!shiftType;
 
                 const card = document.createElement('div');
-                card.className = `staff-card ${!isWorking ? 'unavailable' : ''}`;
-                const label = isWorking && CONFIG.SHIFTS[shiftType] ? CONFIG.SHIFTS[shiftType].label : 'İzinli';
+                card.className = 'staff-card' + (!isWorking ? ' unavailable' : '');
+                const label = isWorking && CONFIG.SHIFTS[shiftType] ? CONFIG.SHIFTS[shiftType].label : 'Izinli';
 
-                card.innerHTML = `
-                    <div class="staff-name">${staff.name}</div>
-                    <div style="font-size: 12px; margin-top: 5px; color: ${isWorking ? '#28a745' : '#dc3545'}">
-                        ${isWorking ? '✓ ' + label : '✗ ' + label}
-                    </div>
-                `;
+                card.innerHTML = '<div class="staff-name">' + staff.name + '</div>' +
+                    '<div style="font-size: 12px; margin-top: 5px; color: ' + (isWorking ? '#28a745' : '#dc3545') + '">' +
+                    (isWorking ? '✓ ' + label : '✗ ' + label) +
+                    '</div>';
 
                 if (isWorking) {
                     card.addEventListener('click', () => selectStaff(staff.id, shiftType));
@@ -460,7 +438,6 @@
             });
         }
 
-        // ============ ÇALIŞAN SEÇİMİ ============
         function selectStaff(staffId, shiftType) {
             selectedStaff = staffId;
             selectedShiftType = shiftType;
@@ -474,13 +451,12 @@
             document.getElementById('submitBtn').style.display = 'none';
         }
 
-        // ============ MÜSAİT SAATLERİ GÖSTER ============
         function displayAvailableTimeSlots() {
             const container = document.getElementById('timeSlots');
             container.innerHTML = '';
 
             if (existingAppointments.length >= CONFIG.MAX_DAILY_APPOINTMENTS) {
-                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #dc3545;">⚠️ Bu gün için tüm randevular dolu.</div>';
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #dc3545;">Bu gun icin tum randevular dolu.</div>';
                 return;
             }
 
@@ -493,17 +469,17 @@
 
             for (let hour = startHour; hour < endHour; hour++) {
                 for (let minute = 0; minute < 60; minute += interval) {
-                    const timeStr = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+                    const timeStr = String(hour).padStart(2, '0') + ':' + String(minute).padStart(2, '0');
                     
                     const isBooked = existingAppointments.some(apt => {
-                        if (!apt.start?.dateTime) return false;
+                        if (!apt.start || !apt.start.dateTime) return false;
                         const t = new Date(apt.start.dateTime);
-                        const aptTime = `${String(t.getHours()).padStart(2, '0')}:${String(t.getMinutes()).padStart(2, '0')}`;
+                        const aptTime = String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
                         return aptTime === timeStr && parseInt(apt.extendedProperties?.private?.staffId) === selectedStaff;
                     });
 
                     const btn = document.createElement('div');
-                    btn.className = `slot-btn ${isBooked ? 'disabled' : ''}`;
+                    btn.className = 'slot-btn' + (isBooked ? ' disabled' : '');
                     btn.textContent = timeStr;
 
                     if (!isBooked) {
@@ -515,7 +491,6 @@
             }
         }
 
-        // ============ SAAT SEÇİMİ ============
         function selectTimeSlot(timeStr, element) {
             selectedTime = timeStr;
             document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
@@ -525,7 +500,6 @@
             document.getElementById('submitBtn').style.display = 'block';
         }
 
-        // ============ RANDEVU OLUŞTUR ============
         document.getElementById('submitBtn').addEventListener('click', async function() {
             const name = document.getElementById('customerName').value.trim();
             const phone = document.getElementById('customerPhone').value.trim();
@@ -533,18 +507,18 @@
             const note = document.getElementById('customerNote').value.trim();
 
             if (!selectedDate || !selectedStaff || !selectedTime) {
-                showAlert('Lütfen tarih, çalışan ve saat seçin.', 'error');
+                showAlert('Lutfen tarih, calisan ve saat secin.', 'error');
                 return;
             }
 
             if (!name || !phone) {
-                showAlert('Lütfen ad ve telefon bilgilerinizi girin.', 'error');
+                showAlert('Lutfen ad ve telefon bilgilerinizi girin.', 'error');
                 return;
             }
 
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.textContent = 'Randevu oluşturuluyor...';
+            btn.textContent = 'Randevu olusturuluyor...';
 
             const staff = staffMembers.find(s => s.id === selectedStaff);
 
@@ -563,23 +537,22 @@
                 });
 
                 if (result.success) {
-                    showAlert('✅ Randevunuz başarıyla oluşturuldu!', 'success');
+                    showAlert('Randevunuz basariyla olusturuldu!', 'success');
                     setTimeout(() => location.reload(), 3000);
                 } else {
-                    showAlert('❌ ' + (result.error || 'Randevu oluşturulamadı'), 'error');
+                    showAlert('Randevu olusturulamadi: ' + (result.error || 'Bilinmeyen hata'), 'error');
                     btn.disabled = false;
                     btn.textContent = 'Randevuyu Onayla';
                 }
             } catch (error) {
-                showAlert('❌ Randevu oluşturulamadı: ' + error.message, 'error');
+                showAlert('Randevu olusturulamadi: ' + error.message, 'error');
                 btn.disabled = false;
                 btn.textContent = 'Randevuyu Onayla';
             }
         });
 
-        // ============ YARDIMCI FONKSİYONLAR ============
         function showAlert(message, type) {
-            document.getElementById('alertContainer').innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            document.getElementById('alertContainer').innerHTML = '<div class="alert alert-' + type + '">' + message + '</div>';
         }
 
         function hideAlert() {
