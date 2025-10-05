@@ -5,21 +5,41 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Randevu Sistemi - Admin Paneli</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: #f5f7fa;
             min-height: 100vh;
         }
+
         .header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 20px 30px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-        .header h1 { font-size: 24px; margin-bottom: 5px; }
-        .header p { font-size: 14px; opacity: 0.9; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
         .tabs {
             display: flex;
             gap: 10px;
@@ -27,6 +47,7 @@
             border-bottom: 2px solid #e0e0e0;
             flex-wrap: wrap;
         }
+
         .tab {
             padding: 12px 24px;
             background: white;
@@ -39,14 +60,25 @@
             color: #666;
             transition: all 0.3s;
         }
-        .tab:hover { background: #f8f9fa; }
+
+        .tab:hover {
+            background: #f8f9fa;
+        }
+
         .tab.active {
             background: #667eea;
             color: white;
             border-color: #667eea;
         }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         .card {
             background: white;
             border-radius: 15px;
@@ -54,13 +86,21 @@
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             margin-bottom: 20px;
         }
+
         .card-title {
             font-size: 18px;
             font-weight: 600;
             color: #333;
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .input-group { margin-bottom: 20px; }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
         label {
             display: block;
             margin-bottom: 8px;
@@ -68,6 +108,7 @@
             font-size: 14px;
             font-weight: 500;
         }
+
         input, select, textarea {
             width: 100%;
             padding: 12px 15px;
@@ -77,11 +118,13 @@
             transition: all 0.3s;
             font-family: inherit;
         }
+
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
+
         .btn {
             padding: 12px 24px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -93,19 +136,30 @@
             cursor: pointer;
             transition: all 0.3s;
         }
+
         .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
+
+        .btn-secondary {
+            background: #6c757d;
         }
-        .btn-secondary { background: #6c757d; }
-        .btn-danger { background: #dc3545; }
-        .btn-small { padding: 8px 16px; font-size: 13px; }
-        .staff-list { display: grid; gap: 15px; }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .staff-list {
+            display: grid;
+            gap: 15px;
+        }
+
         .staff-item {
             background: #f8f9fa;
             padding: 15px;
@@ -115,47 +169,67 @@
             align-items: center;
             border: 2px solid #e0e0e0;
         }
+
         .staff-info {
             display: flex;
             align-items: center;
             gap: 15px;
             flex: 1;
         }
+
         .staff-name {
             font-weight: 600;
             font-size: 16px;
             color: #333;
         }
+
         .staff-status {
             padding: 4px 12px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
         }
-        .status-active { background: #d4edda; color: #155724; }
-        .status-inactive { background: #f8d7da; color: #721c24; }
-        .staff-actions { display: flex; gap: 10px; }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .staff-actions {
+            display: flex;
+            gap: 10px;
+        }
+
         .alert {
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 20px;
             font-size: 14px;
         }
+
         .alert-success {
             background: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
+
         .alert-error {
             background: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
+
         .alert-info {
             background: #d1ecf1;
             color: #0c5460;
             border: 1px solid #bee5eb;
         }
+
         .info-box {
             background: #e7f3ff;
             border-left: 4px solid #2196F3;
@@ -163,38 +237,57 @@
             border-radius: 10px;
             margin-bottom: 20px;
         }
+
+        .info-box p {
+            font-size: 14px;
+            color: #0d47a1;
+            line-height: 1.6;
+            margin: 5px 0;
+        }
+
         .shift-table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
         }
-        .shift-table th, .shift-table td {
+
+        .shift-table th,
+        .shift-table td {
             padding: 12px;
             text-align: center;
             border: 1px solid #e0e0e0;
         }
+
         .shift-table th {
             background: #f8f9fa;
             font-weight: 600;
             color: #555;
         }
+
         .shift-table select {
             width: 100%;
             padding: 5px;
             border: 2px solid #e0e0e0;
             border-radius: 5px;
         }
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #667eea;
+
+        @media (max-width: 768px) {
+            .staff-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .staff-actions {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>🎯 Randevu Sistemi - Admin Paneli</h1>
-        <p>Calisan yonetimi, vardiya planlama ve randevu takibi</p>
+        <p>Çalışan yönetimi, vardiya planlama ve randevu takibi</p>
     </div>
 
     <div class="container">
@@ -202,7 +295,7 @@
 
         <div class="tabs">
             <div class="tab active" data-tab="settings">⚙️ Ayarlar</div>
-            <div class="tab" data-tab="staff">👥 Calisanlar</div>
+            <div class="tab" data-tab="staff">👥 Çalışanlar</div>
             <div class="tab" data-tab="shifts">📅 Vardiyalar</div>
             <div class="tab" data-tab="appointments">📋 Randevular</div>
         </div>
@@ -210,71 +303,91 @@
         <!-- AYARLAR -->
         <div id="settings" class="tab-content active">
             <div class="card">
-                <div class="card-title">🔌 Google Apps Script</div>
+                <div class="card-title">⏰ Randevu Ayarları</div>
                 <div class="alert alert-info">
-                    <strong>📌 Onemli:</strong> Tek bir Apps Script URL kullaniyoruz.<br>
-                    ✅ Hem Google Sheets hem Google Calendar entegrasyonu<br>
-                    ✅ Tum cihazlarda senkronize
+                    <strong>Vardiya Saatleri:</strong><br>
+                    🌅 Sabah: 10:00-18:00 | 🌆 Akşam: 14:00-22:00 | 🌞 Full: 10:00-22:00<br>
+                    <strong>Randevu Saatleri:</strong> 11:00-21:00
                 </div>
                 <div class="input-group">
-                    <label>Apps Script Web App URL</label>
-                    <input type="text" id="appsScriptUrl" placeholder="https://script.google.com/macros/s/...">
+                    <label>Randevu Süresi</label>
+                    <select id="interval">
+                        <option value="30">30 Dakika</option>
+                        <option value="60" selected>60 Dakika</option>
+                        <option value="90">90 Dakika</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Günlük Max Teslim Randevusu</label>
+                    <input type="number" id="maxDaily" value="4" min="1">
                     <small style="color: #666; font-size: 13px; margin-top: 5px; display: block;">
-                        Apps Script kodunu deploy ettikten sonra aldiginiz URL'i buraya girin
+                        Teslim randevuları için günlük maksimum sayı (Görüşme randevuları limitsiz)
                     </small>
                 </div>
                 <button class="btn" onclick="API.save()">💾 Kaydet</button>
-                <button class="btn btn-secondary" onclick="API.test()" style="margin-left: 10px;">🧪 Baglanti Test Et</button>
             </div>
 
             <div class="card">
-                <div class="card-title">🔗 Musteri Randevu Linki</div>
+                <div class="card-title">🔗 Genel Randevu Linki</div>
+                <div class="info-box">
+                    <p><strong>Genel Link:</strong> Tüm çalışanlar için genel randevu sayfası</p>
+                </div>
                 <div class="input-group">
-                    <label>Musteri Sayfasi</label>
+                    <label>Genel Müşteri Sayfası</label>
                     <input type="text" id="customerLink" readonly style="background: #f5f5f5;">
                 </div>
-                <button class="btn" onclick="openCustomerPage()">🔗 Musteri Sayfasini Ac</button>
-                <button class="btn btn-secondary" onclick="copyLink()" style="margin-top: 10px;">📋 Linki Kopyala</button>
+                <button class="btn" onclick="openCustomerPage()" id="openCustomerBtn">🔗 Müşteri Sayfasını Aç</button>
+                <button class="btn btn-secondary" onclick="copyLink()" style="margin-top: 10px;" id="copyLinkBtn">📋 Linki Kopyala</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title">👥 Çalışan Özel Linkleri</div>
+                <div class="info-box">
+                    <p><strong>Özel Linkler:</strong> Her çalışan için özel randevu linki. Bu linklerde müşteri sadece ilgili çalışanın saatlerine randevu alabilir.</p>
+                </div>
+                <div id="staffLinks" style="margin-top: 15px;"></div>
             </div>
         </div>
 
-        <!-- CALISANLAR -->
+        <!-- ÇALIŞANLAR -->
         <div id="staff" class="tab-content">
             <div class="card">
-                <div class="card-title">➕ Yeni Calisan</div>
+                <div class="card-title">➕ Yeni Çalışan</div>
                 <div class="input-group">
-                    <label>Isim</label>
-                    <input type="text" id="newStaffName" placeholder="Ahmet Yilmaz">
+                    <label>İsim</label>
+                    <input type="text" id="newStaffName" placeholder="Ahmet Yılmaz">
                 </div>
                 <button class="btn" onclick="Staff.add()">➕ Ekle</button>
             </div>
 
             <div class="card">
-                <div class="card-title">👥 Calisanlar (<span id="staffCount">0</span>)</div>
-                <button class="btn btn-secondary btn-small" onclick="Staff.load()" style="margin-bottom: 15px;">🔄 Yenile</button>
-                <div class="staff-list" id="staffList">
-                    <div class="loading">Yukleniyor...</div>
-                </div>
+                <div class="card-title">👥 Çalışanlar (<span id="staffCount">0</span>)</div>
+                <div class="staff-list" id="staffList"></div>
             </div>
         </div>
 
-        <!-- VARDIYALAR -->
+        <!-- VARDİYALAR -->
         <div id="shifts" class="tab-content">
             <div class="card">
                 <div class="card-title">📅 Vardiya Planlama</div>
                 <div class="alert alert-info">
-                    🌅 Sabah (10-18) | 🌆 Aksam (14-22) | 🌞 Full (10-22) | ❌ Izinli
+                    🌅 Sabah (10-18) | 🌆 Akşam (14-22) | 🌞 Full (10-22) | ❌ İzinli
                 </div>
                 <div class="input-group">
-                    <label>Hafta Sec</label>
+                    <label>Hafta Seç</label>
                     <div style="display: flex; gap: 10px;">
                         <input type="date" id="weekDate" style="flex: 1;">
-                        <button class="btn btn-small" onclick="Shifts.load()">Yukle</button>
+                        <button class="btn btn-small" onclick="Shifts.load()">Yükle</button>
                         <button class="btn btn-secondary btn-small" onclick="Shifts.nextWeek()">Sonraki →</button>
                     </div>
                 </div>
                 <div id="shiftTable"></div>
                 <button class="btn" onclick="Shifts.save()" style="margin-top: 20px;">💾 Kaydet</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📋 Kayıtlı Planlar</div>
+                <div id="savedShifts"></div>
             </div>
         </div>
 
@@ -282,68 +395,31 @@
         <div id="appointments" class="tab-content">
             <div class="card">
                 <div class="card-title">📋 Randevular</div>
+                <div class="alert alert-info">
+                    <strong>📌 Bilgi:</strong> Google Calendar'da oluşturulan tüm randevuları buradan görebilirsiniz.
+                </div>
                 <div style="display: flex; gap: 10px; margin-bottom: 20px;">
                     <input type="date" id="filterDate" style="flex: 1;">
                     <button class="btn btn-small" onclick="Appointments.load()">Filtrele</button>
                 </div>
-                <div id="appointmentsList">
-                    <div class="loading">Yukleniyor...</div>
-                </div>
+                <div id="appointmentsList"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // ============ TEK APPS SCRIPT URL - BURAYA YAPIŞTIRIN ============
-        let APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyhfesSNFFvYN-SjwNGsOEf_5bKLFkFZkSnHC4l7XjaxmdSN-fr3chox2xRb30HlQ/exec';
-        let staffMembers = [];
-        let currentWeekShifts = {};
-
-        // ==================== API ====================
-        const API = {
-            save() {
-                const url = document.getElementById('appsScriptUrl').value;
-                localStorage.setItem('appsScriptUrl', url);
-                APPS_SCRIPT_URL = url;
-                UI.showAlert('✅ Ayarlar kaydedildi!', 'success');
-            },
-
-            load() {
-                document.getElementById('appsScriptUrl').value = APPS_SCRIPT_URL;
-            },
-
-            async test() {
-                if (!APPS_SCRIPT_URL) {
-                    UI.showAlert('❌ Lutfen once Apps Script URL girin!', 'error');
-                    return;
-                }
-
-                UI.showAlert('Test ediliyor...', 'info');
-
-                try {
-                    const result = await apiCall('test');
-                    if (result.success) {
-                        UI.showAlert('✅ Baglanti basarili! ' + result.message, 'success');
-                    } else {
-                        UI.showAlert('❌ Test basarisiz: ' + result.error, 'error');
-                    }
-                } catch (error) {
-                    UI.showAlert('❌ Baglanti hatasi: ' + error.message, 'error');
-                }
-            }
+        // ==================== CONFIG ====================
+        const CONFIG = {
+            APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyhfesSNFFvYN-SjwNGsOEf_5bKLFkFZkSnHC4l7XjaxmdSN-fr3chox2xRb30HlQ/exec'
         };
 
+        // ==================== API HELPER ====================
         function apiCall(action, params = {}) {
             return new Promise((resolve, reject) => {
-                if (!APPS_SCRIPT_URL) {
-                    reject(new Error('Apps Script URL tanimlanmamis'));
-                    return;
-                }
-
                 const callback = 'cb_' + Date.now();
                 const allParams = { ...params, action, callback };
-                const url = APPS_SCRIPT_URL + '?' + new URLSearchParams(allParams).toString();
-                
+                const url = CONFIG.APPS_SCRIPT_URL + '?' + new URLSearchParams(allParams).toString();
+
                 window[callback] = function(data) {
                     delete window[callback];
                     document.getElementById('jsonpScript_' + callback)?.remove();
@@ -355,106 +431,151 @@
                 script.src = url;
                 script.onerror = () => {
                     delete window[callback];
-                    reject(new Error('API cagrisi basarisiz'));
+                    reject(new Error('API çağrısı başarısız'));
                 };
                 document.body.appendChild(script);
             });
         }
 
-        // ==================== STAFF ====================
-        const Staff = {
-            async load() {
-                const list = document.getElementById('staffList');
-                list.innerHTML = '<div class="loading">Yukleniyor...</div>';
+        // ==================== DATA ====================
+        const Data = {
+            staff: [],
+            shifts: {},
+            settings: { interval: 60, maxDaily: 4 },
 
+            async loadStaff() {
                 try {
                     const response = await apiCall('getStaff');
                     if (response.success) {
-                        staffMembers = response.data;
-                        this.render();
-                    } else {
-                        list.innerHTML = '<p style="text-align:center;color:#dc3545;padding:20px;">Hata: ' + response.error + '</p>';
+                        this.staff = response.data;
                     }
                 } catch (error) {
-                    list.innerHTML = '<p style="text-align:center;color:#dc3545;padding:20px;">Baglanti hatasi</p>';
+                    console.error('Çalışanlar yüklenemedi:', error);
                 }
             },
 
+            async loadShifts() {
+                // Shifts are loaded per month/week basis, no need for initial load
+                this.shifts = {};
+            },
+
+            async loadSettings() {
+                try {
+                    const response = await apiCall('getSettings');
+                    if (response.success) {
+                        this.settings = response.data;
+                    }
+                } catch (error) {
+                    console.error('Ayarlar yüklenemedi:', error);
+                }
+            }
+        };
+
+        // ==================== API ====================
+        const API = {
+            async save() {
+                try {
+                    const response = await apiCall('saveSettings', {
+                        interval: document.getElementById('interval').value,
+                        maxDaily: document.getElementById('maxDaily').value
+                    });
+
+                    if (response.success) {
+                        Data.settings = response.data;
+                        UI.showAlert('✅ Ayarlar kaydedildi!', 'success');
+                    } else {
+                        UI.showAlert('❌ Hata: ' + response.error, 'error');
+                    }
+                } catch (error) {
+                    UI.showAlert('❌ Kaydetme hatası: ' + error.message, 'error');
+                }
+            },
+
+            async load() {
+                try {
+                    await Data.loadSettings();
+                    document.getElementById('interval').value = Data.settings.interval || 60;
+                    document.getElementById('maxDaily').value = Data.settings.maxDaily || 4;
+                } catch (error) {
+                    console.error('Ayarlar yüklenemedi:', error);
+                }
+            }
+        };
+
+        // ==================== STAFF ====================
+        const Staff = {
             async add() {
                 const input = document.getElementById('newStaffName');
                 const name = input.value.trim();
 
                 if (!name) {
-                    UI.showAlert('❌ Lutfen isim girin!', 'error');
+                    UI.showAlert('❌ Lütfen isim girin!', 'error');
                     return;
                 }
 
                 try {
-                    const result = await apiCall('addStaff', { name });
-                    if (result.success) {
+                    const response = await apiCall('addStaff', { name });
+
+                    if (response.success) {
+                        Data.staff = response.data;
                         input.value = '';
+                        this.render();
                         UI.showAlert('✅ ' + name + ' eklendi!', 'success');
-                        await this.load();
                     } else {
-                        UI.showAlert('❌ Hata: ' + result.error, 'error');
+                        UI.showAlert('❌ Hata: ' + response.error, 'error');
                     }
                 } catch (error) {
-                    UI.showAlert('❌ Baglanti hatasi', 'error');
+                    UI.showAlert('❌ Ekleme hatası: ' + error.message, 'error');
                 }
             },
 
             async toggle(id) {
-                const staff = staffMembers.find(s => s.id === id);
-                if (!staff) return;
-
-                const newStatus = !staff.active;
-                
                 try {
-                    const result = await apiCall('updateStaff', { 
-                        id: id, 
-                        active: newStatus 
-                    });
-                    
-                    if (result.success) {
-                        UI.showAlert('✅ Durum degisti!', 'success');
-                        await this.load();
+                    const response = await apiCall('toggleStaff', { id });
+
+                    if (response.success) {
+                        Data.staff = response.data;
+                        this.render();
+                        UI.showAlert('✅ Durum değişti!', 'success');
                     } else {
-                        UI.showAlert('❌ Hata: ' + result.error, 'error');
+                        UI.showAlert('❌ Hata: ' + response.error, 'error');
                     }
                 } catch (error) {
-                    UI.showAlert('❌ Baglanti hatasi', 'error');
+                    UI.showAlert('❌ Güncelleme hatası: ' + error.message, 'error');
                 }
             },
 
             async remove(id) {
-                const staff = staffMembers.find(s => s.id === id);
+                const staff = Data.staff.find(s => s.id === id);
                 if (!staff) return;
 
-                if (!confirm(staff.name + ' silinsin mi?')) return;
+                if (!confirm('"' + staff.name + '" silinsin mi?')) return;
 
                 try {
-                    const result = await apiCall('deleteStaff', { id });
-                    if (result.success) {
+                    const response = await apiCall('removeStaff', { id });
+
+                    if (response.success) {
+                        Data.staff = response.data;
+                        this.render();
                         UI.showAlert('✅ ' + staff.name + ' silindi!', 'success');
-                        await this.load();
                     } else {
-                        UI.showAlert('❌ Hata: ' + result.error, 'error');
+                        UI.showAlert('❌ Hata: ' + response.error, 'error');
                     }
                 } catch (error) {
-                    UI.showAlert('❌ Baglanti hatasi', 'error');
+                    UI.showAlert('❌ Silme hatası: ' + error.message, 'error');
                 }
             },
 
             render() {
                 const list = document.getElementById('staffList');
-                document.getElementById('staffCount').textContent = staffMembers.filter(s => s.active).length;
+                document.getElementById('staffCount').textContent = Data.staff.filter(s => s.active).length;
 
-                if (staffMembers.length === 0) {
-                    list.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">Henuz calisan yok</p>';
+                if (Data.staff.length === 0) {
+                    list.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">Henüz çalışan yok</p>';
                     return;
                 }
 
-                list.innerHTML = staffMembers.map(s => `
+                list.innerHTML = Data.staff.map(s => `
                     <div class="staff-item">
                         <div class="staff-info">
                             <div>
@@ -472,6 +593,53 @@
                         </div>
                     </div>
                 `).join('');
+
+                // Çalışan linklerini güncelle
+                this.renderLinks();
+            },
+
+            renderLinks() {
+                const container = document.getElementById('staffLinks');
+                if (!container) return;
+
+                if (Data.staff.length === 0) {
+                    container.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">Henüz çalışan yok</p>';
+                    return;
+                }
+
+                const baseUrl = window.location.href.replace('admin.html', 'index.html').split('?')[0];
+
+                container.innerHTML = Data.staff.filter(s => s.active).map(s => {
+                    const staffLink = `${baseUrl}?staff=${s.id}`;
+                    return `
+                        <div style="background:#f8f9fa;padding:15px;border-radius:10px;margin-bottom:15px;border-left:4px solid #667eea;">
+                            <div style="font-weight:600;font-size:15px;margin-bottom:8px;">👤 ${s.name}</div>
+                            <div style="display:flex;gap:10px;align-items:center;">
+                                <input type="text" value="${staffLink}" readonly
+                                    style="flex:1;padding:8px;background:#fff;border:2px solid #e0e0e0;border-radius:8px;font-size:13px;"
+                                    id="staffLink_${s.id}">
+                                <button class="btn btn-small" onclick="Staff.copyLink(${s.id})" style="white-space:nowrap;">
+                                    📋 Kopyala
+                                </button>
+                                <button class="btn btn-secondary btn-small" onclick="Staff.openLink(${s.id})" style="white-space:nowrap;">
+                                    🔗 Aç
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            copyLink(staffId) {
+                const input = document.getElementById('staffLink_' + staffId);
+                input.select();
+                document.execCommand('copy');
+                UI.showAlert('✅ Link kopyalandı!', 'success');
+            },
+
+            openLink(staffId) {
+                const input = document.getElementById('staffLink_' + staffId);
+                window.open(input.value, '_blank');
             }
         };
 
@@ -491,31 +659,26 @@
             async load() {
                 const date = document.getElementById('weekDate').value;
                 if (!date) {
-                    UI.showAlert('❌ Tarih secin!', 'error');
+                    UI.showAlert('❌ Tarih seçin!', 'error');
                     return;
                 }
-
                 this.currentWeek = date;
-                const container = document.getElementById('shiftTable');
-                container.innerHTML = '<div class="loading">Yukleniyor...</div>';
+
+                // Load shifts for this week
+                const weekStart = new Date(date);
+                const monthStr = weekStart.toISOString().slice(0, 7);
 
                 try {
-                    // Önce çalışanları yükle
-                    if (staffMembers.length === 0) {
-                        await Staff.load();
-                    }
-
-                    // Sonra vardiyaları yükle
-                    const result = await apiCall('getShiftsForWeek', { weekStart: date });
-                    if (result.success) {
-                        currentWeekShifts = result.data;
-                        this.render();
-                    } else {
-                        container.innerHTML = '<p style="color:#dc3545;">Hata: ' + result.error + '</p>';
+                    const response = await apiCall('getMonthShifts', { month: monthStr });
+                    if (response.success) {
+                        Data.shifts = response.data || {};
                     }
                 } catch (error) {
-                    container.innerHTML = '<p style="color:#dc3545;">Baglanti hatasi</p>';
+                    console.error('Vardiyalar yüklenemedi:', error);
                 }
+
+                this.render();
+                this.renderSaved();
             },
 
             nextWeek() {
@@ -527,75 +690,71 @@
 
             async save() {
                 if (!this.currentWeek) {
-                    UI.showAlert('❌ Once hafta yukleyin!', 'error');
+                    UI.showAlert('❌ Önce hafta yükleyin!', 'error');
                     return;
                 }
 
-                UI.showAlert('Kaydediliyor...', 'info');
+                const shiftsData = {};
+                const selects = document.querySelectorAll('.shift-select');
+
+                selects.forEach(select => {
+                    const staffId = parseInt(select.dataset.staff);
+                    const date = select.dataset.date;
+                    const value = select.value;
+
+                    if (!shiftsData[date]) shiftsData[date] = {};
+
+                    if (value) {
+                        shiftsData[date][staffId] = value;
+                    }
+                });
 
                 try {
-                    const selects = document.querySelectorAll('.shift-select');
-                    const allPromises = [];
-
-                    // Her gün için ayrı kayıt
-                    const dateShifts = {};
-                    
-                    selects.forEach(select => {
-                        const staffId = parseInt(select.dataset.staff);
-                        const date = select.dataset.date;
-                        const value = select.value;
-
-                        if (!dateShifts[date]) dateShifts[date] = {};
-                        if (value) {
-                            dateShifts[date][staffId] = value;
-                        }
+                    const response = await apiCall('saveShifts', {
+                        shifts: JSON.stringify(shiftsData)
                     });
 
-                    // Her tarih için API çağrısı
-                    for (const date in dateShifts) {
-                        const promise = apiCall('saveShifts', {
-                            date: date,
-                            shifts: JSON.stringify(dateShifts[date])
-                        });
-                        allPromises.push(promise);
+                    if (response.success) {
+                        // Merge with local data
+                        Object.assign(Data.shifts, shiftsData);
+                        this.renderSaved();
+                        UI.showAlert('✅ Vardiyalar kaydedildi!', 'success');
+                    } else {
+                        UI.showAlert('❌ Hata: ' + response.error, 'error');
                     }
-
-                    await Promise.all(allPromises);
-                    UI.showAlert('✅ Vardiyalar kaydedildi!', 'success');
-
                 } catch (error) {
-                    UI.showAlert('❌ Kayit hatasi', 'error');
+                    UI.showAlert('❌ Kaydetme hatası: ' + error.message, 'error');
                 }
             },
 
             render() {
                 const container = document.getElementById('shiftTable');
                 const weekStart = new Date(this.currentWeek);
-                const days = ['Pzt', 'Sal', 'Car', 'Per', 'Cum', 'Cmt', 'Paz'];
+                const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
 
-                let html = '<table class="shift-table"><thead><tr><th>Calisan</th>';
+                let html = '<table class="shift-table"><thead><tr><th>Çalışan</th>';
 
                 for (let i = 0; i < 7; i++) {
                     const d = new Date(weekStart);
                     d.setDate(weekStart.getDate() + i);
-                    const dateStr = d.getDate() + '/' + (d.getMonth() + 1);
+                    const dateStr = d.getDate() + ' ' + (d.getMonth() + 1);
                     html += '<th>' + days[i] + '<br><small>' + dateStr + '</small></th>';
                 }
                 html += '</tr></thead><tbody>';
 
-                staffMembers.filter(s => s.active).forEach(staff => {
+                Data.staff.filter(s => s.active).forEach(staff => {
                     html += '<tr><td style="text-align:left;font-weight:600;">' + staff.name + '</td>';
 
                     for (let i = 0; i < 7; i++) {
                         const d = new Date(weekStart);
                         d.setDate(weekStart.getDate() + i);
                         const dateKey = d.toISOString().split('T')[0];
-                        const current = currentWeekShifts[dateKey]?.[staff.id] || '';
+                        const current = Data.shifts[dateKey]?.[staff.id] || '';
 
                         html += '<td><select class="shift-select" data-staff="' + staff.id + '" data-date="' + dateKey + '">';
                         html += '<option value="">❌</option>';
                         html += '<option value="morning"' + (current === 'morning' ? ' selected' : '') + '>🌅 Sabah</option>';
-                        html += '<option value="evening"' + (current === 'evening' ? ' selected' : '') + '>🌆 Aksam</option>';
+                        html += '<option value="evening"' + (current === 'evening' ? ' selected' : '') + '>🌆 Akşam</option>';
                         html += '<option value="full"' + (current === 'full' ? ' selected' : '') + '>🌞 Full</option>';
                         html += '</select></td>';
                     }
@@ -605,54 +764,99 @@
 
                 html += '</tbody></table>';
                 container.innerHTML = html;
+            },
+
+            renderSaved() {
+                const container = document.getElementById('savedShifts');
+                const dates = Object.keys(Data.shifts).sort().reverse().slice(0, 10);
+
+                if (dates.length === 0) {
+                    container.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">Kayıtlı plan yok</p>';
+                    return;
+                }
+
+                const weeks = {};
+                dates.forEach(dateStr => {
+                    const d = new Date(dateStr);
+                    const day = d.getDay();
+                    const diff = day === 0 ? -6 : 1 - day;
+                    const monday = new Date(d);
+                    monday.setDate(d.getDate() + diff);
+                    const weekKey = monday.toISOString().split('T')[0];
+
+                    if (!weeks[weekKey]) weeks[weekKey] = [];
+                    weeks[weekKey].push(dateStr);
+                });
+
+                container.innerHTML = Object.keys(weeks).sort().reverse().map(weekStart => {
+                    const weekEnd = new Date(weekStart);
+                    weekEnd.setDate(weekEnd.getDate() + 6);
+                    return `
+                        <div style="background:#f8f9fa;padding:15px;border-radius:10px;margin-bottom:10px;border-left:4px solid #667eea;">
+                            <div style="font-weight:600;">📅 ${new Date(weekStart).toLocaleDateString('tr-TR')} - ${weekEnd.toLocaleDateString('tr-TR')}</div>
+                            <div style="font-size:13px;color:#666;margin-top:5px;">${weeks[weekStart].length} gün planlandı</div>
+                            <button class="btn btn-small" onclick="Shifts.loadWeek('${weekStart}')" style="margin-top:10px;">✏️ Düzenle</button>
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            loadWeek(weekStart) {
+                document.getElementById('weekDate').value = weekStart;
+                this.load();
+                UI.switchTab('shifts');
             }
         };
 
         // ==================== APPOINTMENTS ====================
         const Appointments = {
-            async load() {
+            load() {
                 const filterDate = document.getElementById('filterDate').value;
+
                 const container = document.getElementById('appointmentsList');
-
-                if (!APPS_SCRIPT_URL) {
-                    container.innerHTML = '<p style="text-align:center;color:#dc3545;padding:20px;">Once Apps Script URL ayarlayin!</p>';
-                    return;
-                }
-
-                container.innerHTML = '<div class="loading">Yukleniyor...</div>';
+                container.innerHTML = '<p style="text-align:center;padding:20px;">Yükleniyor...</p>';
 
                 const date = filterDate || new Date().toISOString().split('T')[0];
+                const callback = 'loadApts_' + Date.now();
 
-                try {
-                    const result = await apiCall('getAppointments', { date });
-                    if (result.success) {
-                        this.render(result.items || []);
+                window[callback] = (data) => {
+                    if (data.error) {
+                        container.innerHTML = '<p style="text-align:center;color:#dc3545;padding:20px;">❌ Hata: ' + data.error + '</p>';
                     } else {
-                        container.innerHTML = '<p style="text-align:center;color:#dc3545;padding:20px;">Hata: ' + result.error + '</p>';
+                        this.render(data.items || []);
                     }
-                } catch (error) {
-                    container.innerHTML = '<p style="text-align:center;color:#dc3545;padding:20px;">Baglanti hatasi</p>';
-                }
+                    delete window[callback];
+                    document.getElementById('jsonpScript')?.remove();
+                };
+
+                const script = document.createElement('script');
+                script.id = 'jsonpScript';
+                script.src = `${CONFIG.APPS_SCRIPT_URL}?action=getAppointments&date=${date}&callback=${callback}`;
+                script.onerror = () => {
+                    container.innerHTML = '<p style="text-align:center;color:#dc3545;padding:20px;">❌ Apps Script yüklenemedi.</p>';
+                    delete window[callback];
+                };
+                document.body.appendChild(script);
             },
 
             render(appointments) {
                 const container = document.getElementById('appointmentsList');
 
                 if (appointments.length === 0) {
-                    container.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">Randevu bulunamadi</p>';
+                    container.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">Randevu bulunamadı</p>';
                     return;
                 }
 
                 const shiftLabels = {
                     'morning': '🌅 Sabah',
-                    'evening': '🌆 Aksam',
+                    'evening': '🌆 Akşam',
                     'full': '🌞 Full'
                 };
 
                 container.innerHTML = appointments.map(apt => {
                     const start = new Date(apt.start.dateTime || apt.start.date);
                     const staffId = apt.extendedProperties?.private?.staffId;
-                    const staff = staffMembers.find(s => s.id === parseInt(staffId));
+                    const staff = Data.staff.find(s => s.id === parseInt(staffId));
                     const phone = apt.extendedProperties?.private?.customerPhone || '-';
                     const shiftType = apt.extendedProperties?.private?.shiftType || '';
 
@@ -665,9 +869,9 @@
                                 ${start.toLocaleDateString('tr-TR', {weekday:'long',year:'numeric',month:'long',day:'numeric'})}
                             </div>
                             <div style="font-size:14px;line-height:1.6;">
-                                <strong>👤 Musteri:</strong> ${apt.summary?.replace('Randevu: ', '') || 'Isimsiz'}<br>
+                                <strong>👤 Müşteri:</strong> ${apt.summary?.replace('Randevu: ', '') || 'İsimsiz'}<br>
                                 <strong>📞 Telefon:</strong> ${phone}<br>
-                                <strong>👨‍💼 Calisan:</strong> ${staff?.name || '-'}<br>
+                                <strong>👨‍💼 Çalışan:</strong> ${staff?.name || '-'}<br>
                                 <strong>⏰ Vardiya:</strong> ${shiftLabels[shiftType] || '-'}
                             </div>
                         </div>
@@ -691,7 +895,6 @@
                 document.querySelector('.tab[data-tab="' + tabName + '"]').classList.add('active');
                 document.getElementById(tabName).classList.add('active');
 
-                if (tabName === 'staff') Staff.load();
                 if (tabName === 'appointments') Appointments.load();
             }
         };
@@ -700,20 +903,24 @@
             const link = document.getElementById('customerLink');
             link.select();
             document.execCommand('copy');
-            UI.showAlert('✅ Link kopyalandi!', 'success');
+            UI.showAlert('✅ Link kopyalandı!', 'success');
         }
 
         function openCustomerPage() {
             const link = document.getElementById('customerLink').value;
-            if (link) {
+            if (link && !link.includes('⚠️')) {
                 window.open(link, '_blank');
             }
         }
 
         // ==================== INIT ====================
-        document.addEventListener('DOMContentLoaded', function() {
-            API.load();
-            Staff.load();
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Load all data from server
+            await Data.loadStaff();
+            await Data.loadShifts();
+            await API.load();
+
+            Staff.render();
             Shifts.init();
 
             // Tab switching
@@ -723,11 +930,12 @@
                 });
             });
 
-            // Customer link
-            const customerLink = window.location.href.replace('admin.html', 'index.html');
-            document.getElementById('customerLink').value = customerLink;
+            // Customer link setup
+            const linkInput = document.getElementById('customerLink');
+            const customerLink = window.location.href.replace('admin.html', 'index.html').split('?')[0];
+            linkInput.value = customerLink;
 
-            // Filter date
+            // Filter date - bugün
             document.getElementById('filterDate').valueAsDate = new Date();
         });
     </script>
