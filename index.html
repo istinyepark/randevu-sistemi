@@ -478,7 +478,7 @@
     </div>
 
     <script>
-        // APPS SCRIPT URL - Buraya kendi URL'inizi yapiştirin
+        // APPS SCRIPT URL
         const CONFIG = {
             APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyhfesSNFFvYN-SjwNGsOEf_5bKLFkFZkSnHC4l7XjaxmdSN-fr3chox2xRb30HlQ/exec',
 
@@ -508,23 +508,25 @@
         let googleCalendarEvents = {}; // Google Calendar'dan gelen etkinlikler {date: [events]}
         let specificStaffId = null; // URL parametresinden gelen staff ID
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Load settings first
+            await loadSettings();
+
             // URL parametrelerini kontrol et
             const urlParams = new URLSearchParams(window.location.search);
             specificStaffId = urlParams.get('staff');
 
             if (specificStaffId) {
                 // Belirli bir çalışan için sayfa
-                loadStaffMembers().then(() => {
-                    const staff = staffMembers.find(s => s.id == specificStaffId);
-                    if (staff) {
-                        document.getElementById('staffHeader').textContent =
-                            staff.name + ' ile randevu alın';
-                        selectedStaff = parseInt(specificStaffId);
-                    }
-                });
+                await loadStaffMembers();
+                const staff = staffMembers.find(s => s.id == specificStaffId);
+                if (staff) {
+                    document.getElementById('staffHeader').textContent =
+                        staff.name + ' ile randevu alın';
+                    selectedStaff = parseInt(specificStaffId);
+                }
             } else {
-                loadStaffMembers();
+                await loadStaffMembers();
             }
         });
 
@@ -744,6 +746,19 @@
             } catch (error) {
                 console.error('API hatasi:', error);
                 showAlert('Baglanti hatasi. Apps Script URL kontrol edin.', 'error');
+            }
+        }
+
+        async function loadSettings() {
+            try {
+                const response = await apiCall('getSettings');
+                if (response.success) {
+                    // Update CONFIG with server settings
+                    CONFIG.APPOINTMENT_HOURS.interval = response.data.interval || 60;
+                    CONFIG.MAX_DAILY_DELIVERY_APPOINTMENTS = response.data.maxDaily || 4;
+                }
+            } catch (error) {
+                console.error('Ayarlar yuklenemedi:', error);
             }
         }
 
