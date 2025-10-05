@@ -594,7 +594,7 @@
 
                 const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
                 date.setHours(0, 0, 0, 0);
-                const dateStr = date.toISOString().split('T')[0];
+                const dateStr = formatLocalDate(date);
 
                 // Bugün
                 if (date.getTime() === today.getTime()) {
@@ -626,6 +626,14 @@
             const hasShifts = dayShifts[dateStr] && Object.keys(dayShifts[dateStr]).length > 0;
             if (!hasShifts) {
                 return { available: false, reason: 'Çalışan yok' };
+            }
+
+            // Google Calendar'da o günün event sayısını kontrol et
+            const calendarEvents = googleCalendarEvents[dateStr] || [];
+
+            // Eğer 4 veya daha fazla event varsa o günü kapat
+            if (calendarEvents.length >= 4) {
+                return { available: false, reason: 'Gün dolu (4 randevu)' };
             }
 
             // Teslim randevusu için max 4 kontrolü
@@ -684,8 +692,8 @@
                     apiCall('getMonthShifts', { month: monthStr }),
                     apiCall('getMonthAppointments', { month: monthStr }),
                     apiCall('getGoogleCalendarEvents', {
-                        startDate: startDate.toISOString().split('T')[0],
-                        endDate: endDate.toISOString().split('T')[0],
+                        startDate: formatLocalDate(startDate),
+                        endDate: formatLocalDate(endDate),
                         staffId: specificStaffId || 'all'
                     })
                 ]);
@@ -710,25 +718,62 @@
             }
         }
 
+        // Local timezone'da tarih formatla (timezone kayması olmasın)
+        function formatLocalDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
         function apiCall(action, params = {}) {
             return new Promise((resolve, reject) => {
-                const callback = 'cb_' + Date.now();
+                const callback = 'cb_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 const allParams = { ...params, action, callback };
                 const url = CONFIG.APPS_SCRIPT_URL + '?' + new URLSearchParams(allParams).toString();
 
+                // Callback'i ÖNCE tanımla
                 window[callback] = function(data) {
                     delete window[callback];
-                    document.getElementById('jsonpScript_' + callback)?.remove();
+                    const scriptEl = document.getElementById('jsonpScript_' + callback);
+                    if (scriptEl) {
+                        scriptEl.remove();
+                    }
                     resolve(data);
                 };
 
+                // Sonra script'i ekle
                 const script = document.createElement('script');
                 script.id = 'jsonpScript_' + callback;
                 script.src = url;
-                script.onerror = () => {
+                script.onerror = (error) => {
                     delete window[callback];
+                    const scriptEl = document.getElementById('jsonpScript_' + callback);
+                    if (scriptEl) {
+                        scriptEl.remove();
+                    }
                     reject(new Error('API cagrisi basarisiz'));
                 };
+
+                // Timeout ekle (10 saniye)
+                const timeoutId = setTimeout(() => {
+                    if (window[callback]) {
+                        delete window[callback];
+                        const scriptEl = document.getElementById('jsonpScript_' + callback);
+                        if (scriptEl) {
+                            scriptEl.remove();
+                        }
+                        reject(new Error('Timeout - API cevap vermedi'));
+                    }
+                }, 10000);
+
+                // Response geldiğinde timeout'u temizle
+                const originalCallback = window[callback];
+                window[callback] = function(data) {
+                    clearTimeout(timeoutId);
+                    originalCallback(data);
+                };
+
                 document.body.appendChild(script);
             });
         }
