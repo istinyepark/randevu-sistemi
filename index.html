@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rolex Randevu</title>
+    <title>İzmir İstinyepark Rolex</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -447,13 +447,18 @@
             padding: 40px 20px;
         }
 
+        .loading-error-container {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
         /* Apple-style spinner */
         .spinner {
             width: 40px;
             height: 40px;
             margin: 0 auto;
             border: 3px solid #E8E8E8;
-            border-top-color: #1A1A2E;
+            border-top-color: #C9A55A;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
@@ -614,6 +619,102 @@
             color: #FAFAFA;
         }
 
+        /* Calendar Modal */
+        .calendar-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(26, 26, 46, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .calendar-modal.active {
+            display: flex;
+        }
+
+        .calendar-modal-content {
+            background: white;
+            border-radius: 2px;
+            padding: 40px;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .calendar-modal-header {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 400;
+            letter-spacing: 1px;
+            color: #1A1A2E;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .calendar-modal-subtitle {
+            font-size: 12px;
+            color: #757575;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .calendar-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .calendar-option-btn {
+            width: 100%;
+            padding: 16px 20px;
+            background: #FAFAFA;
+            border: 1px solid #E8E8E8;
+            border-radius: 2px;
+            font-size: 13px;
+            letter-spacing: 1px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+            color: #1A1A2E;
+            text-align: center;
+        }
+
+        .calendar-option-btn:hover {
+            background: white;
+            border-color: #C9A55A;
+            transform: translateY(-2px);
+        }
+
+        .modal-close-btn {
+            width: 100%;
+            padding: 12px 20px;
+            background: transparent;
+            border: 1px solid #E8E8E8;
+            border-radius: 2px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+            color: #757575;
+        }
+
+        .modal-close-btn:hover {
+            border-color: #1A1A2E;
+            color: #1A1A2E;
+        }
+
         @media (max-width: 600px) {
             body { padding: 10px; }
             .container { padding: 25px; max-width: 100%; }
@@ -630,6 +731,7 @@
             .btn { padding: 14px 30px; font-size: 11px; letter-spacing: 2px; }
             .success-icon { font-size: 56px; }
             .success-title { font-size: 22px; }
+            .calendar-modal-content { padding: 30px 25px; }
         }
     </style>
 </head>
@@ -867,7 +969,7 @@
         </button>
 
         <div class="info-box">
-            <p>Randevunuz onaylandıktan sonra size WhatsApp ve e-posta ile bilgilendirme yapılacaktır.</p>
+            <p>Randevunuz onaylandıktan sonra size e-posta ile bilgilendirme yapılacaktır.</p>
         </div>
     </div>
 
@@ -1118,7 +1220,7 @@
                 hideAlert();
             } catch (error) {
                 console.error('Veri yukleme hatasi:', error);
-                showAlert('Veriler yuklenemedi.', 'error');
+                showLoadingError();
             }
         }
 
@@ -1187,11 +1289,9 @@
                     console.log('Calisanlar yuklendi:', staffMembers);
                 } else {
                     console.error('Calisanlar yuklenemedi:', response.error);
-                    showAlert('Calisanlar yuklenemedi: ' + response.error, 'error');
                 }
             } catch (error) {
                 console.error('API hatasi:', error);
-                showAlert('Baglanti hatasi. Apps Script URL kontrol edin.', 'error');
             }
         }
 
@@ -1451,6 +1551,90 @@
             document.getElementById('alertContainer').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
         }
 
+        function showLoadingError() {
+            const container = document.querySelector('.container');
+            container.innerHTML = `
+                <div class="header">
+                    <svg class="rolex-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 456.6 494.7" alt="">
+                        <linearGradient id="a" x1="35.557" x2="461.064" y1="183.426" y2="330.853" gradientUnits="userSpaceOnUse">
+                            <stop offset="0" stop-color="#f9f4eb"></stop>
+                            <stop offset="0.089" stop-color="#f8f2e7"></stop>
+                            <stop offset="0.17" stop-color="#f6ecdd"></stop>
+                            <stop offset="0.248" stop-color="#f3e3cd"></stop>
+                            <stop offset="0.324" stop-color="#efd6b5"></stop>
+                            <stop offset="0.338" stop-color="#edd3b0"></stop>
+                            <stop offset="0.42" stop-color="#eccfa9"></stop>
+                            <stop offset="0.48" stop-color="#ebcaa0"></stop>
+                            <stop offset="0.703" stop-color="#e1bc8b"></stop>
+                            <stop offset="0.81" stop-color="#dcb480"></stop>
+                            <stop offset="0.844" stop-color="#ca9e70"></stop>
+                            <stop offset="0.893" stop-color="#b98960"></stop>
+                            <stop offset="0.944" stop-color="#af7d57"></stop>
+                            <stop offset="1" stop-color="#ac7954"></stop>
+                        </linearGradient>
+                        <linearGradient id="b" x1="-8.035" x2="430.509" y1="206.645" y2="284.926" gradientUnits="userSpaceOnUse">
+                            <stop offset="0" stop-color="#e8c798"></stop>
+                            <stop offset="0.139" stop-color="#e8c89b"></stop>
+                            <stop offset="0.241" stop-color="#ebcda4"></stop>
+                            <stop offset="0.316" stop-color="#edd3b0"></stop>
+                            <stop offset="0.399" stop-color="#ecd0a9"></stop>
+                            <stop offset="0.482" stop-color="#e9ca9d"></stop>
+                            <stop offset="0.757" stop-color="#e7c89a"></stop>
+                            <stop offset="0.769" stop-color="#c8a77f"></stop>
+                            <stop offset="0.79" stop-color="#a07e5e"></stop>
+                            <stop offset="0.811" stop-color="#816046"></stop>
+                            <stop offset="0.832" stop-color="#6a4b35"></stop>
+                            <stop offset="0.854" stop-color="#5c3d2b"></stop>
+                            <stop offset="0.877" stop-color="#533624"></stop>
+                            <stop offset="0.901" stop-color="#503322"></stop>
+                        </linearGradient>
+                        <linearGradient id="c" x1="111.356" x2="409.373" y1="206.84" y2="311.671" gradientUnits="userSpaceOnUse">
+                            <stop offset="0.12" stop-color="#f3dfbd"></stop>
+                            <stop offset="0.257" stop-color="#f0dbb9"></stop>
+                            <stop offset="0.382" stop-color="#e7cfac"></stop>
+                            <stop offset="0.503" stop-color="#d9ba96"></stop>
+                            <stop offset="0.62" stop-color="#c69f7a"></stop>
+                            <stop offset="0.691" stop-color="#b98b67"></stop>
+                        </linearGradient>
+                        <linearGradient id="d" x1="-7.272" x2="431.272" y1="205.232" y2="283.513" gradientUnits="userSpaceOnUse">
+                            <stop offset="0" stop-color="#e8c798"></stop>
+                            <stop offset="0.139" stop-color="#e8c89b"></stop>
+                            <stop offset="0.241" stop-color="#ebcda4"></stop>
+                            <stop offset="0.316" stop-color="#edd3b0"></stop>
+                            <stop offset="0.399" stop-color="#ecd0a9"></stop>
+                            <stop offset="0.482" stop-color="#e9ca9d"></stop>
+                            <stop offset="0.714" stop-color="#e7c89a"></stop>
+                            <stop offset="0.749" stop-color="#efd8b7"></stop>
+                            <stop offset="0.784" stop-color="#f5e5cf"></stop>
+                            <stop offset="0.821" stop-color="#faefe0"></stop>
+                            <stop offset="0.86" stop-color="#fdf5ea"></stop>
+                            <stop offset="0.901" stop-color="#fef7ee"></stop>
+                        </linearGradient>
+                        <linearGradient id="e" x1="229.976" x2="209.978" y1="118.482" y2="537.763" gradientUnits="userSpaceOnUse">
+                            <stop offset="0.581" stop-color="#fcfbe9" stop-opacity="0"></stop>
+                            <stop offset="0.628" stop-color="#eee6d0" stop-opacity="0.181"></stop>
+                            <stop offset="0.725" stop-color="#ccb592" stop-opacity="0.554"></stop>
+                            <stop offset="0.842" stop-color="#a37b4c"></stop>
+                            <stop offset="0.843" stop-color="#9e764b"></stop>
+                        </linearGradient>
+                        <path fill="url(#a)" d="M228.3 494.7 0 313.4l57.6-214L228.3 0l170.7 99.4 57.6 214z"></path>
+                        <path fill="url(#b)" d="M390.9 120.3 228.3 18.4 65.7 120.3l-49.4 184 212 156.3 212-156.3z"></path>
+                        <path fill="url(#c)" d="M374.4 133.9 228.3 43.5 82.2 133.9l-41.9 156.4 188 137.9 188-137.9z"></path>
+                        <path fill="url(#d)" d="M228.3 37.1 74.5 123.3l-46.2 172.2 200 146.6 200-146.6-46.2-172.2z"></path>
+                        <path fill="url(#e)" d="m228.3 53.9-9.5 417.8 9.5 6.9 9.5-6.9-9.5-417.8"></path>
+                    </svg>
+                    <p id="staffHeader">İzmir İstinyepark</p>
+                </div>
+
+                <div class="loading-error-container">
+                    <div class="spinner"></div>
+                    <button class="btn" onclick="location.reload()" style="margin-top: 40px; padding: 12px 30px;">
+                        Yeniden Dene
+                    </button>
+                </div>
+            `;
+        }
+
         function showSuccessPage(dateStr, timeStr, staffName) {
             // Tarihi formatla (12 Ekim 2025, Salı)
             const date = new Date(dateStr);
@@ -1650,6 +1834,41 @@
         }
 
         function addToCalendar() {
+            openCalendarModal();
+        }
+
+        // Modal açma/kapama fonksiyonları
+        function openCalendarModal() {
+            document.getElementById('calendarModal').classList.add('active');
+        }
+
+        function closeCalendarModal() {
+            document.getElementById('calendarModal').classList.remove('active');
+        }
+
+        // Takvime ekleme fonksiyonları
+        function addToCalendarApple() {
+            const date = new Date(selectedDate + 'T' + selectedTime);
+            const endDate = new Date(date.getTime() + CONFIG.APPOINTMENT_HOURS.interval * 60000);
+
+            // .ics içeriği oluştur
+            const icsContent = generateICS(date, endDate);
+
+            // Data URL ile window.open kullan
+            const dataUrl = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(icsContent);
+            const newWindow = window.open(dataUrl, '_blank');
+
+            // Sekmeyi otomatik kapat (2 saniye sonra)
+            if (newWindow) {
+                setTimeout(() => {
+                    newWindow.close();
+                }, 2000);
+            }
+
+            closeCalendarModal();
+        }
+
+        function addToCalendarGoogle() {
             const date = new Date(selectedDate + 'T' + selectedTime);
             const endDate = new Date(date.getTime() + CONFIG.APPOINTMENT_HOURS.interval * 60000);
 
@@ -1657,25 +1876,74 @@
                 return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
             };
 
-            // Cihaz algılama
-            const isAppleDevice = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent);
+            const startTime = formatDateForGoogle(date);
+            const endTime = formatDateForGoogle(endDate);
+            const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Rolex Randevu')}&dates=${startTime}/${endTime}&details=${encodeURIComponent('Randevunuz onaylandı')}&location=${encodeURIComponent('Rolex İzmir İstinyepark')}`;
 
-            if (isAppleDevice) {
-                // Apple cihazlar için Google Calendar web arayüzü
-                const startTime = formatDateForGoogle(date);
-                const endTime = formatDateForGoogle(endDate);
-                const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Rolex Randevu')}&dates=${startTime}/${endTime}&details=${encodeURIComponent('Randevunuz onaylandı')}&location=${encodeURIComponent('Rolex İzmir İstinyepark')}`;
+            window.open(calendarUrl, '_blank');
+            closeCalendarModal();
+        }
 
-                window.open(calendarUrl, '_blank');
-            } else {
-                // Diğer cihazlar için Google Calendar web arayüzü
-                const startTime = formatDateForGoogle(date);
-                const endTime = formatDateForGoogle(endDate);
-                const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Rolex Randevu')}&dates=${startTime}/${endTime}&details=${encodeURIComponent('Randevunuz onaylandı')}&location=${encodeURIComponent('Rolex İzmir İstinyepark')}`;
+        function addToCalendarOutlook() {
+            const date = new Date(selectedDate + 'T' + selectedTime);
+            const endDate = new Date(date.getTime() + CONFIG.APPOINTMENT_HOURS.interval * 60000);
 
-                window.open(calendarUrl, '_blank');
-            }
+            const formatDateForOutlook = (d) => {
+                return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            };
+
+            const startTime = formatDateForOutlook(date);
+            const endTime = formatDateForOutlook(endDate);
+            const outlookUrl = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent('Rolex Randevu')}&startdt=${startTime}&enddt=${endTime}&body=${encodeURIComponent('Randevunuz onaylandı')}&location=${encodeURIComponent('Rolex İzmir İstinyepark')}`;
+
+            window.open(outlookUrl, '_blank');
+            closeCalendarModal();
+        }
+
+        function generateICS(startDate, endDate) {
+            const formatICSDate = (d) => {
+                return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            };
+
+            return `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Rolex//Randevu Sistemi//TR
+BEGIN:VEVENT
+UID:${Date.now()}@rolex-randevu.com
+DTSTAMP:${formatICSDate(new Date())}
+DTSTART:${formatICSDate(startDate)}
+DTEND:${formatICSDate(endDate)}
+SUMMARY:Rolex Randevu
+DESCRIPTION:Randevunuz onaylandı
+LOCATION:Rolex İzmir İstinyepark
+STATUS:CONFIRMED
+END:VEVENT
+END:VCALENDAR`;
         }
     </script>
+
+    <!-- Calendar Modal -->
+    <div id="calendarModal" class="calendar-modal">
+        <div class="calendar-modal-content">
+            <div class="calendar-modal-header">Takvim Seçin</div>
+            <div class="calendar-modal-subtitle">Randevunuzu hangi takvime eklemek istersiniz?</div>
+
+            <div class="calendar-options">
+                <button class="calendar-option-btn" onclick="addToCalendarApple()">
+                    <span>Apple Calendar</span>
+                </button>
+
+                <button class="calendar-option-btn" onclick="addToCalendarGoogle()">
+                    <span>Google Calendar</span>
+                </button>
+
+                <button class="calendar-option-btn" onclick="addToCalendarOutlook()">
+                    <span>Outlook Calendar</span>
+                </button>
+            </div>
+
+            <button class="modal-close-btn" onclick="closeCalendarModal()">İptal</button>
+        </div>
+    </div>
 </body>
 </html>
