@@ -429,17 +429,17 @@
         }
 
         .info-box {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
+            background: transparent;
+            padding: 0;
             margin-bottom: 20px;
-            border-left: 4px solid #667eea;
         }
 
         .info-box p {
-            font-size: 14px;
-            color: #555;
+            font-size: 13px;
+            color: #757575;
             line-height: 1.6;
+            text-align: center;
+            font-weight: 300;
         }
 
         .loading {
@@ -506,6 +506,88 @@
             border-color: #C9A55A;
         }
 
+        /* Success Page Styles */
+        .success-container {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .success-icon {
+            font-size: 72px;
+            color: #C9A55A;
+            margin-bottom: 30px;
+            line-height: 1;
+        }
+
+        .success-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 400;
+            letter-spacing: 1px;
+            color: #1A1A2E;
+            margin-bottom: 20px;
+        }
+
+        .success-text {
+            font-size: 14px;
+            color: #757575;
+            line-height: 1.8;
+            font-weight: 300;
+            margin-bottom: 40px;
+        }
+
+        .appointment-details {
+            background: white;
+            padding: 30px;
+            border-radius: 2px;
+            margin: 30px 0;
+            border-left: 3px solid #C9A55A;
+            text-align: left;
+        }
+
+        .details-header {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #757575;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .detail-item {
+            font-size: 15px;
+            color: #2C2C2C;
+            margin-bottom: 10px;
+            font-weight: 400;
+        }
+
+        .detail-location {
+            font-size: 13px;
+            color: #757575;
+            margin-top: 15px;
+        }
+
+        .btn-secondary {
+            width: 100%;
+            padding: 12px 30px;
+            background: transparent;
+            color: #1A1A2E;
+            border: 2px solid #1A1A2E;
+            border-radius: 2px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .btn-secondary:hover {
+            background: #1A1A2E;
+            color: #FAFAFA;
+        }
+
         @media (max-width: 600px) {
             body { padding: 10px; }
             .container { padding: 25px; max-width: 100%; }
@@ -520,6 +602,8 @@
             .available-slots { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
             .type-card { padding: 18px; }
             .btn { padding: 14px 30px; font-size: 11px; letter-spacing: 2px; }
+            .success-icon { font-size: 56px; }
+            .success-title { font-size: 22px; }
         }
     </style>
 </head>
@@ -698,7 +782,6 @@
 
         <!-- Randevu Tipi Seçimi -->
         <div class="section">
-            <div class="section-title">Randevu Türü Seçiniz</div>
             <div class="appointment-types">
                 <div class="type-card" data-type="delivery" onclick="selectAppointmentType('delivery')">
                     <h3>Teslim Randevusu</h3>
@@ -711,7 +794,6 @@
 
         <!-- Aylık Takvim -->
         <div class="section" id="calendarSection" style="display: none;">
-            <div class="section-title">Tarih Seçiniz</div>
             <div class="calendar-container">
                 <div class="calendar-header">
                     <h2 id="currentMonth"></h2>
@@ -731,14 +813,13 @@
         </div>
 
         <div class="section" id="timeSection" style="display: none;">
-            <div class="section-title">Saat Seçiniz</div>
             <div class="available-slots" id="timeSlots"></div>
         </div>
 
         <div class="section" id="detailsSection" style="display: none;">
-            <div class="section-title">İletişim Bilgileriniz</div>
+            <div class="section-title">İletişim bilgileriniz</div>
             <div class="input-group">
-                <label for="customerName">Adınız Soyadınız *</label>
+                <label for="customerName">Adınız soyadınız *</label>
                 <input type="text" id="customerName" placeholder="Örn: Ahmet Yılmaz" required>
             </div>
             <div class="input-group">
@@ -746,11 +827,11 @@
                 <input type="tel" id="customerPhone" placeholder="0555 123 45 67" required>
             </div>
             <div class="input-group">
-                <label for="customerEmail">E-posta (İsteğe bağlı)</label>
+                <label for="customerEmail">E-posta</label>
                 <input type="email" id="customerEmail" placeholder="ornek@email.com">
             </div>
             <div class="input-group">
-                <label for="customerNote">Not (İsteğe bağlı)</label>
+                <label for="customerNote">Not</label>
                 <textarea id="customerNote" placeholder="Randevu ile ilgili eklemek istediğiniz bir not varsa..."></textarea>
             </div>
         </div>
@@ -760,7 +841,7 @@
         </button>
 
         <div class="info-box">
-            <p><strong>ℹ️ Bilgilendirme:</strong> Randevunuz onaylandıktan sonra size Whatsapp ve e-posta ile bilgilendirme yapılacaktır.</p>
+            <p>Randevunuz onaylandıktan sonra size WhatsApp ve e-posta ile bilgilendirme yapılacaktır.</p>
         </div>
     </div>
 
@@ -1319,8 +1400,7 @@
                 });
 
                 if (result.success) {
-                    showAlert('Randevunuz basariyla olusturuldu!', 'success');
-                    setTimeout(() => location.reload(), 3000);
+                    showSuccessPage(selectedDate, selectedTime, staff.name);
                 } else {
                     showAlert('Randevu olusturulamadi: ' + (result.error || 'Bilinmeyen hata'), 'error');
                     btn.disabled = false;
@@ -1339,6 +1419,73 @@
 
         function hideAlert() {
             document.getElementById('alertContainer').innerHTML = '';
+        }
+
+        function showSuccessPage(dateStr, timeStr, staffName) {
+            // Tarihi formatla (12 Ekim 2025, Salı)
+            const date = new Date(dateStr);
+            const months = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+                           'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+            const days = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
+
+            const formattedDate = `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}, ${days[date.getDay()]}`;
+
+            const container = document.querySelector('.container');
+            container.innerHTML = `
+                <div class="header">
+                    <svg class="rolex-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 456.6 494.7" alt="">
+                        <linearGradient id="a" x1="35.557" x2="461.064" y1="183.426" y2="330.853" gradientUnits="userSpaceOnUse">
+                            <stop offset="0" stop-color="#f9f4eb"></stop>
+                            <stop offset="0.089" stop-color="#f8f2e7"></stop>
+                            <stop offset="0.17" stop-color="#f6ecdd"></stop>
+                            <stop offset="0.248" stop-color="#f3e3cd"></stop>
+                            <stop offset="0.324" stop-color="#efd6b5"></stop>
+                            <stop offset="0.338" stop-color="#edd3b0"></stop>
+                            <stop offset="0.42" stop-color="#eccfa9"></stop>
+                            <stop offset="0.48" stop-color="#ebcaa0"></stop>
+                            <stop offset="0.703" stop-color="#e1bc8b"></stop>
+                            <stop offset="0.81" stop-color="#dcb480"></stop>
+                            <stop offset="0.844" stop-color="#ca9e70"></stop>
+                            <stop offset="0.893" stop-color="#b98960"></stop>
+                            <stop offset="0.944" stop-color="#af7d57"></stop>
+                            <stop offset="1" stop-color="#ac7954"></stop>
+                        </linearGradient>
+                        <path fill="url(#a)" d="M416.4 119.7s-20.2 1.8-24 26.7c0 0 0 13 5.9 21.6l2.2 3.1s1 1.4-.6 5.1l-73.7 171.2-2.4 4.1s-2.6 4.1-9.6 1.4c0 0-6.1-2.4-4.7-13.4l20.2-146.6 13-87.7s.7-3.4 3.4-4.2c.7-.2 1.4-.5 2.1-1 4.3-2.6 16.9-11.8 17.5-27.7 0 0 3-16.9-11.6-27.5-10.4-7.6-24.4-8.5-35.4-1.9-6.4 3.8-12.3 10.4-13.7 22 0 0-3.1 13.2 4.5 24.4 0 0 5.3 6.3 6.7 7.3 0 0 1.6 1.4 1.2 3.1l-44.2 207.6s-3.1 12.6-13.4 12.8c0 0-7.1 1.4-8.5-10.6l-6.1-129.9-5.5-112.1s.6-5.5 4.7-7.9c0 0 15.5-11.8 10.8-30.7 0 0-4.7-29.3-37.9-23.4 0 0-24.6 7.3-17.5 40.7 0 0 2.4 9.4 11.4 14.9 0 0 5.5 2.4 5.5 9.6L208.2 307s.8 13.8-12.2 14.7c0 0-7.7.8-12.4-23.2L138.1 105s-2.5-11.2 3-16.1c0 0 17.6-22.9-2.4-44.4 0 0-16.7-16.3-38.7-1.2 0 0-15.7 9.8-9.4 35.6 0 0 1.5 10.7 15.2 18.1 0 0 7.9 2.6 8.5 9.5l27.9 186.1s5.7 42.5 4.3 50.9c0 0 .8 7.5-7.3 9.8 0 0-6.1 1.4-12.8-15.5L57.3 179.9s-4.3-10.8 0-15.7c0 0 16.3-26.1-8.6-41.3 0 0-17.9-12.2-36.2 3.7 0 0-20.2 18.3 0 41.3 0 0 4.7 6.3 16.1 9.2 0 0 6.7.2 7.7 7.5l58.6 170.2 32.6 95.5s3.2 11.6 5.1 13.2c0 0 5.3 5.7 23.2 11.4 0 0 41.9 20.8 94.9 14.4 0 0 35.2-3.3 67.4-18.7l5.1-2.9s2.6-1 4.7-9.4l33-98.1 35.8-100.3 21-61.5 4.3-10.6s2.4-6.5 9.6-8.1c0 0 22.2-4.1 22-31.3.2 0-1.6-33.2-37.2-28.7zm-160 335.8s-55.4 9.2-87.3-11.2c0 0-15.1-7.9-10.2-27.7 0 0 3.6-9.3 17.3-14.2 0 0 22.4-13 78-7.7 0 0 44.6 5.1 44.8 28.5.1.1 7.9 24.6-42.6 32.3z"></path>
+                    </svg>
+                    <p id="staffHeader">İzmir İstinyepark</p>
+                </div>
+
+                <div class="success-container">
+                    <div class="success-icon">✓</div>
+                    <div class="success-title">Randevunuz Oluşturuldu</div>
+                    <p class="success-text">
+                        Sizi butikimizde ağırlamayı sabırsızlıkla bekliyoruz. Randevu detaylarınız e-posta adresinize gönderilmiştir.
+                    </p>
+
+                    <div class="appointment-details">
+                        <div class="details-header">Randevu Bilgileriniz</div>
+                        <div class="detail-item">${formattedDate}</div>
+                        <div class="detail-item">Saat ${timeStr}</div>
+                        <div class="detail-location">Rolex İzmir İstinyepark</div>
+                    </div>
+
+                    <button class="btn-secondary" onclick="addToCalendar()">Takvime Ekle</button>
+                </div>
+            `;
+        }
+
+        function addToCalendar() {
+            // Google Calendar ekleme linki
+            const date = new Date(selectedDate + 'T' + selectedTime);
+            const endDate = new Date(date.getTime() + CONFIG.APPOINTMENT_HOURS.interval * 60000);
+
+            const formatDateForCalendar = (d) => {
+                return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+            };
+
+            const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=Rolex Randevu&dates=${formatDateForCalendar(date)}/${formatDateForCalendar(endDate)}&location=Rolex İzmir İstinyepark&details=Randevunuz onaylandı`;
+
+            window.open(calendarUrl, '_blank');
         }
     </script>
 </body>
