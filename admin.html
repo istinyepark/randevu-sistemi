@@ -414,20 +414,33 @@
         // ==================== API HELPER ====================
         function apiCall(action, params = {}) {
             return new Promise((resolve, reject) => {
-                const callback = 'cb_' + Date.now();
+                const callback = 'cb_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 const allParams = { ...params, action, callback };
                 const url = CONFIG.APPS_SCRIPT_URL + '?' + new URLSearchParams(allParams).toString();
 
+                let timeoutId = null;
+
                 window[callback] = function(data) {
+                    if (timeoutId) clearTimeout(timeoutId);
                     delete window[callback];
                     document.getElementById('jsonpScript_' + callback)?.remove();
                     resolve(data);
                 };
 
+                // Timeout ekle (30 saniye)
+                timeoutId = setTimeout(() => {
+                    if (window[callback]) {
+                        delete window[callback];
+                        document.getElementById('jsonpScript_' + callback)?.remove();
+                        reject(new Error('Timeout - API cevap vermedi'));
+                    }
+                }, 30000);
+
                 const script = document.createElement('script');
                 script.id = 'jsonpScript_' + callback;
                 script.src = url;
                 script.onerror = () => {
+                    if (timeoutId) clearTimeout(timeoutId);
                     delete window[callback];
                     reject(new Error('API çağrısı başarısız'));
                 };
@@ -605,7 +618,9 @@
                     return;
                 }
 
-                const baseUrl = window.location.href.replace('admin.html', 'index.html').split('?')[0];
+                let baseUrl = window.location.href.replace('admin.html', 'index.html').split('?')[0];
+                // Eğer admin içeriyorsa (örn: /admin), o da index olsun
+                baseUrl = baseUrl.replace('/admin', '/index.html');
 
                 container.innerHTML = Data.staff.filter(s => s.active).map(s => {
                     const staffLink = `${baseUrl}?staff=${s.id}`;
