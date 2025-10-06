@@ -399,6 +399,10 @@
                     <input type="text" id="newStaffName" placeholder="Ahmet Yılmaz">
                 </div>
                 <div class="input-group">
+                    <label>Telefon</label>
+                    <input type="tel" id="newStaffPhone" placeholder="0555 123 4567">
+                </div>
+                <div class="input-group">
                     <label>E-posta</label>
                     <input type="email" id="newStaffEmail" placeholder="ahmet@example.com">
                 </div>
@@ -456,6 +460,10 @@
                 <div class="input-group">
                     <label>İsim</label>
                     <input type="text" id="editStaffName">
+                </div>
+                <div class="input-group">
+                    <label>Telefon</label>
+                    <input type="tel" id="editStaffPhone">
                 </div>
                 <div class="input-group">
                     <label>E-posta</label>
@@ -583,12 +591,19 @@
 
             async add() {
                 const inputName = document.getElementById('newStaffName');
+                const inputPhone = document.getElementById('newStaffPhone');
                 const inputEmail = document.getElementById('newStaffEmail');
                 const name = inputName.value.trim();
+                const phone = inputPhone.value.trim();
                 const email = inputEmail.value.trim();
 
                 if (!name) {
                     UI.showAlert('❌ Lütfen isim girin!', 'error');
+                    return;
+                }
+
+                if (!phone) {
+                    UI.showAlert('❌ Lütfen telefon girin!', 'error');
                     return;
                 }
 
@@ -598,11 +613,12 @@
                 }
 
                 try {
-                    const response = await apiCall('addStaff', { name, email });
+                    const response = await apiCall('addStaff', { name, phone, email });
 
                     if (response.success) {
                         Data.staff = response.data;
                         inputName.value = '';
+                        inputPhone.value = '';
                         inputEmail.value = '';
                         this.render();
                         UI.showAlert('✅ ' + name + ' eklendi!', 'success');
@@ -665,7 +681,7 @@
                         <div class="staff-info">
                             <div>
                                 <div class="staff-name">${s.name}</div>
-                                <div style="font-size: 12px; color: #666; margin-top: 4px;">${s.email || 'E-posta yok'}</div>
+                                <div style="font-size: 12px; color: #666; margin-top: 4px;">${s.phone || 'Telefon yok'} • ${s.email || 'E-posta yok'}</div>
                             </div>
                             <span class="staff-status ${s.active ? 'status-active' : 'status-inactive'}">
                                 ${s.active ? 'Aktif' : 'Pasif'}
@@ -737,6 +753,7 @@
 
                 this.currentEditId = staffId;
                 document.getElementById('editStaffName').value = staff.name;
+                document.getElementById('editStaffPhone').value = staff.phone || '';
                 document.getElementById('editStaffEmail').value = staff.email || '';
                 document.getElementById('editStaffModal').classList.add('active');
             },
@@ -748,10 +765,16 @@
 
             async saveEdit() {
                 const name = document.getElementById('editStaffName').value.trim();
+                const phone = document.getElementById('editStaffPhone').value.trim();
                 const email = document.getElementById('editStaffEmail').value.trim();
 
                 if (!name) {
                     UI.showAlert('❌ Lütfen isim girin!', 'error');
+                    return;
+                }
+
+                if (!phone) {
+                    UI.showAlert('❌ Lütfen telefon girin!', 'error');
                     return;
                 }
 
@@ -764,6 +787,7 @@
                     const response = await apiCall('updateStaff', {
                         id: this.currentEditId,
                         name: name,
+                        phone: phone,
                         email: email
                     });
 
