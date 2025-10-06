@@ -1459,7 +1459,7 @@
                     <div class="success-icon">✓</div>
                     <div class="success-title">Randevunuz Oluşturuldu</div>
                     <p class="success-text">
-                        Sizleri mağazamızda ağırlamayı sabırsızlıkla bekliyoruz.
+                        Sizi mağazamızda ağırlamayı sabırsızlıkla bekliyoruz.
                     </p>
 
                     <div class="appointment-details">
@@ -1475,17 +1475,41 @@
         }
 
         function addToCalendar() {
-            // Google Calendar ekleme linki
+            // iCalendar (.ics) dosyası oluştur - tüm takvim uygulamalarında çalışır
             const date = new Date(selectedDate + 'T' + selectedTime);
             const endDate = new Date(date.getTime() + CONFIG.APPOINTMENT_HOURS.interval * 60000);
 
-            const formatDateForCalendar = (d) => {
+            const formatDateForICS = (d) => {
                 return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
             };
 
-            const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=Rolex Randevu&dates=${formatDateForCalendar(date)}/${formatDateForCalendar(endDate)}&location=Rolex İzmir İstinyepark&details=Randevunuz onaylandı`;
+            const icsContent = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//Rolex//Randevu Sistemi//TR',
+                'CALSCALE:GREGORIAN',
+                'METHOD:PUBLISH',
+                'BEGIN:VEVENT',
+                'DTSTART:' + formatDateForICS(date),
+                'DTEND:' + formatDateForICS(endDate),
+                'SUMMARY:Rolex Randevu',
+                'DESCRIPTION:Randevunuz onaylandı',
+                'LOCATION:Rolex İzmir İstinyepark',
+                'STATUS:CONFIRMED',
+                'SEQUENCE:0',
+                'END:VEVENT',
+                'END:VCALENDAR'
+            ].join('\r\n');
 
-            window.open(calendarUrl, '_blank');
+            // .ics dosyasını indir
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'rolex-randevu.ics';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(link.href);
         }
     </script>
 </body>
