@@ -205,6 +205,47 @@
             gap: 10px;
         }
 
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: flex-end;
+        }
+
         .alert {
             padding: 15px;
             border-radius: 10px;
@@ -407,6 +448,25 @@
                 <div id="appointmentsList"></div>
             </div>
         </div>
+
+        <!-- Çalışan Düzenleme Modal -->
+        <div id="editStaffModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">✏️ Çalışan Düzenle</div>
+                <div class="input-group">
+                    <label>İsim</label>
+                    <input type="text" id="editStaffName">
+                </div>
+                <div class="input-group">
+                    <label>E-posta</label>
+                    <input type="email" id="editStaffEmail">
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="Staff.closeEditModal()">İptal</button>
+                    <button class="btn" onclick="Staff.saveEdit()">Kaydet</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -519,6 +579,8 @@
 
         // ==================== STAFF ====================
         const Staff = {
+            currentEditId: null,
+
             async add() {
                 const inputName = document.getElementById('newStaffName');
                 const inputEmail = document.getElementById('newStaffEmail');
@@ -610,6 +672,7 @@
                             </span>
                         </div>
                         <div class="staff-actions">
+                            <button class="btn btn-small" onclick="Staff.openEditModal(${s.id})">✏️ Düzenle</button>
                             <button class="btn btn-small ${s.active ? 'btn-danger' : 'btn'}" onclick="Staff.toggle(${s.id})">
                                 ${s.active ? '⏸️ Pasif' : '▶️ Aktif'}
                             </button>
@@ -666,6 +729,55 @@
             openLink(staffId) {
                 const input = document.getElementById('staffLink_' + staffId);
                 window.open(input.value, '_blank');
+            },
+
+            openEditModal(staffId) {
+                const staff = Data.staff.find(s => s.id === staffId);
+                if (!staff) return;
+
+                this.currentEditId = staffId;
+                document.getElementById('editStaffName').value = staff.name;
+                document.getElementById('editStaffEmail').value = staff.email || '';
+                document.getElementById('editStaffModal').classList.add('active');
+            },
+
+            closeEditModal() {
+                this.currentEditId = null;
+                document.getElementById('editStaffModal').classList.remove('active');
+            },
+
+            async saveEdit() {
+                const name = document.getElementById('editStaffName').value.trim();
+                const email = document.getElementById('editStaffEmail').value.trim();
+
+                if (!name) {
+                    UI.showAlert('❌ Lütfen isim girin!', 'error');
+                    return;
+                }
+
+                if (!email) {
+                    UI.showAlert('❌ Lütfen e-posta girin!', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await apiCall('updateStaff', {
+                        id: this.currentEditId,
+                        name: name,
+                        email: email
+                    });
+
+                    if (response.success) {
+                        Data.staff = response.data;
+                        this.render();
+                        this.closeEditModal();
+                        UI.showAlert('✅ Çalışan güncellendi!', 'success');
+                    } else {
+                        UI.showAlert('❌ Hata: ' + response.error, 'error');
+                    }
+                } catch (error) {
+                    UI.showAlert('❌ Güncelleme hatası: ' + error.message, 'error');
+                }
             }
         };
 
