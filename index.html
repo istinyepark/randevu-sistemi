@@ -3,54 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Randevu Al</title>
+    <title>Rolex Randevu</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #FAFAFA 0%, #F5F5F0 100%);
             min-height: 100vh;
             padding: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
+            color: #2C2C2C;
         }
 
         .container {
             background: white;
-            border-radius: 20px;
-            padding: 25px;
+            border-radius: 4px;
+            padding: 40px;
             max-width: 650px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 20px rgba(0,0,0,0.06);
         }
 
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 40px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #E8E8E8;
         }
 
         .header h1 {
-            color: #667eea;
-            font-size: 28px;
-            margin-bottom: 10px;
+            font-family: 'Playfair Display', serif;
+            font-weight: 300;
+            font-size: 36px;
+            letter-spacing: 4px;
+            color: #1A1A2E;
+            margin-bottom: 12px;
         }
 
         .header p {
-            color: #666;
-            font-size: 14px;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #757575;
+            font-weight: 300;
         }
 
         .section {
-            margin-bottom: 25px;
+            margin-bottom: 35px;
         }
 
         .section-title {
-            font-size: 18px;
-            color: #333;
-            margin-bottom: 15px;
-            font-weight: 600;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #757575;
+            margin-bottom: 18px;
+            font-weight: 500;
         }
 
         /* Randevu Tipi Seçimi */
@@ -62,55 +76,56 @@
         }
 
         .type-card {
-            padding: 20px;
-            background: #f5f5f5;
-            border: 3px solid #e0e0e0;
-            border-radius: 15px;
+            padding: 22px;
+            background: #FAFAFA;
+            border: 1px solid #E8E8E8;
+            border-radius: 2px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             text-align: center;
         }
 
         .type-card:hover {
-            background: #e8e8ff;
-            border-color: #667eea;
+            background: white;
+            border-color: #C9A55A;
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(201, 165, 90, 0.15);
         }
 
         .type-card.selected {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
+            background: #1A1A2E;
+            color: #FAFAFA;
+            border-color: #1A1A2E;
         }
 
         .type-card h3 {
-            font-size: 18px;
-            margin-bottom: 8px;
-        }
-
-        .type-card p {
-            font-size: 13px;
-            opacity: 0.8;
+            font-size: 15px;
+            letter-spacing: 1px;
+            font-weight: 400;
+            margin-bottom: 0;
         }
 
         /* Aylık Takvim */
         .calendar-container {
-            background: #fff;
-            border-radius: 15px;
-            padding: 15px;
-            border: 2px solid #f0f0f0;
+            background: #FAFAFA;
+            border-radius: 2px;
+            padding: 20px;
+            border: 1px solid #E8E8E8;
         }
 
         .calendar-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .calendar-header h2 {
-            color: #333;
-            font-size: 18px;
+            font-family: 'Playfair Display', serif;
+            color: #1A1A2E;
+            font-size: 20px;
+            font-weight: 400;
+            letter-spacing: 2px;
         }
 
         .calendar-nav {
@@ -119,19 +134,22 @@
         }
 
         .nav-btn {
-            padding: 6px 12px;
-            background: #f5f5f5;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
+            padding: 8px 14px;
+            background: white;
+            border: 1px solid #E8E8E8;
+            border-radius: 2px;
             cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            transition: all 0.3s;
+            font-size: 12px;
+            letter-spacing: 1px;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            color: #2C2C2C;
         }
 
         .nav-btn:hover {
-            background: #e8e8ff;
-            border-color: #667eea;
+            background: #1A1A2E;
+            color: #FAFAFA;
+            border-color: #1A1A2E;
         }
 
         .calendar-grid {
@@ -143,9 +161,11 @@
         .day-header {
             text-align: center;
             padding: 8px 4px;
-            font-weight: 600;
-            color: #666;
-            font-size: 12px;
+            font-weight: 500;
+            color: #757575;
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
         .calendar-day {
@@ -154,50 +174,53 @@
             align-items: center;
             justify-content: center;
             border-radius: 50%;
-            font-size: 13px;
+            font-size: 12px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
             position: relative;
-            min-height: 35px;
+            min-height: 30px;
+            font-weight: 300;
         }
 
         .calendar-day.other-month {
-            color: #ccc;
+            color: #E0E0E0;
             cursor: default;
         }
 
         .calendar-day.today {
-            font-weight: 700;
-            color: #667eea;
+            font-weight: 500;
+            color: #C9A55A;
+            border: 1px solid #C9A55A;
         }
 
         .calendar-day.available {
-            background: #e3f2fd;
-            border: 2px solid #1976d2;
-            color: #1976d2;
-            font-weight: 600;
+            background: white;
+            border: 1px solid #C9A55A;
+            color: #1A1A2E;
+            font-weight: 400;
         }
 
         .calendar-day.available:hover {
-            background: #1976d2;
+            background: #C9A55A;
             color: white;
-            transform: scale(1.1);
+            transform: scale(1.05);
         }
 
         .calendar-day.unavailable {
-            color: #999;
+            color: #BDBDBD;
             text-decoration: line-through;
             cursor: not-allowed;
         }
 
         .calendar-day.selected {
-            background: #667eea;
+            background: #1A1A2E;
             color: white;
-            font-weight: 700;
+            font-weight: 500;
+            border: 1px solid #1A1A2E;
         }
 
         .calendar-day.past {
-            color: #ddd;
+            color: #E8E8E8;
             cursor: not-allowed;
         }
 
@@ -210,71 +233,86 @@
         }
 
         .slot-btn {
-            padding: 12px;
-            background: #f5f5f5;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            padding: 14px;
+            background: white;
+            border: 1px solid #E8E8E8;
+            border-radius: 2px;
             cursor: pointer;
-            transition: all 0.3s;
-            font-size: 14px;
-            font-weight: 500;
-            color: #333;
+            transition: all 0.3s ease;
+            font-size: 13px;
+            font-weight: 300;
+            color: #2C2C2C;
+            letter-spacing: 0.5px;
         }
 
         .slot-btn:hover {
-            background: #e8e8ff;
-            border-color: #667eea;
+            background: #FAFAFA;
+            border-color: #C9A55A;
         }
 
         .slot-btn.selected {
-            background: #667eea;
+            background: #1A1A2E;
             color: white;
-            border-color: #667eea;
+            border-color: #1A1A2E;
+            font-weight: 400;
         }
 
         .slot-btn.disabled {
             opacity: 0.3;
             cursor: not-allowed;
-            background: #f9f9f9;
+            background: #FAFAFA;
             text-decoration: line-through;
         }
 
         .slot-btn.disabled:hover {
-            background: #f9f9f9;
-            border-color: #e0e0e0;
+            background: #FAFAFA;
+            border-color: #E8E8E8;
         }
 
         .staff-select {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
+            gap: 12px;
+            margin-top: 15px;
         }
 
         .staff-card {
-            padding: 15px;
-            background: #f5f5f5;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            padding: 18px;
+            background: #FAFAFA;
+            border: 1px solid #E8E8E8;
+            border-radius: 2px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             text-align: center;
         }
 
         .staff-card:hover {
-            background: #e8e8ff;
-            border-color: #667eea;
+            background: white;
+            border-color: #C9A55A;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(201, 165, 90, 0.15);
         }
 
         .staff-card.selected {
-            background: #667eea;
+            background: #1A1A2E;
             color: white;
-            border-color: #667eea;
+            border-color: #1A1A2E;
         }
 
         .staff-card.unavailable {
             opacity: 0.4;
             cursor: not-allowed;
+        }
+
+        .staff-name {
+            font-weight: 400;
+            font-size: 14px;
+            color: #2C2C2C;
+            letter-spacing: 0.5px;
+        }
+
+        .staff-card.selected .staff-name {
+            color: white;
         }
 
         .staff-card.unavailable:hover {
@@ -301,23 +339,36 @@
 
         input, select, textarea {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            padding: 14px 16px;
+            border: 1px solid #E8E8E8;
+            border-radius: 2px;
+            background: white;
             font-size: 15px;
-            transition: all 0.3s;
-            font-family: inherit;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 300;
+            color: #2C2C2C;
+            transition: all 0.3s ease;
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #C9A55A;
+            box-shadow: 0 0 0 3px rgba(201, 165, 90, 0.1);
         }
 
         textarea {
             resize: vertical;
             min-height: 80px;
+        }
+
+        label {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #757575;
+            margin-bottom: 8px;
+            display: block;
+            font-weight: 500;
         }
 
         .btn {
@@ -390,48 +441,106 @@
             color: #667eea;
         }
 
+        /* Submit button */
+        .btn {
+            width: 100%;
+            padding: 16px 40px;
+            background: #1A1A2E;
+            color: #FAFAFA;
+            border: none;
+            border-radius: 2px;
+            font-size: 12px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            background: #2C2C3E;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26, 26, 46, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Alert */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 2px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            line-height: 1.6;
+            border-left: 3px solid;
+        }
+
+        .alert-success {
+            background: #F0F7F4;
+            color: #1A5D3A;
+            border-color: #4A9B5F;
+        }
+
+        .alert-error {
+            background: #FFF5F5;
+            color: #8B1E1E;
+            border-color: #C9555A;
+        }
+
+        .alert-info {
+            background: #F4E4C1;
+            color: #2C2C2C;
+            border-color: #C9A55A;
+        }
+
         @media (max-width: 600px) {
             body { padding: 10px; }
-            .container { padding: 15px; max-width: 100%; }
-            .header h1 { font-size: 22px; }
-            .calendar-container { padding: 10px; }
+            .container { padding: 25px; max-width: 100%; }
+            .header h1 { font-size: 28px; letter-spacing: 2px; }
+            .header p { font-size: 10px; }
+            .calendar-container { padding: 15px; }
             .calendar-header h2 { font-size: 16px; }
             .calendar-grid { gap: 4px; }
-            .calendar-day { font-size: 11px; min-height: 30px; }
-            .day-header { font-size: 10px; padding: 5px 2px; }
-            .nav-btn { padding: 5px 10px; font-size: 12px; }
+            .calendar-day { font-size: 11px; min-height: 28px; }
+            .day-header { font-size: 9px; padding: 5px 2px; }
+            .nav-btn { padding: 6px 10px; font-size: 11px; }
             .available-slots { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
-            .type-card { padding: 15px; }
+            .type-card { padding: 18px; }
+            .btn { padding: 14px 30px; font-size: 11px; letter-spacing: 2px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>📅 Online Randevu</h1>
-            <p id="staffHeader">Müsait bir zaman seçin ve randevunuzu oluşturun</p>
+            <h1>ROLEX</h1>
+            <p id="staffHeader">İzmir İstinyepark</p>
         </div>
 
         <div id="alertContainer"></div>
 
         <!-- Randevu Tipi Seçimi -->
         <div class="section">
-            <div class="section-title">📋 Randevu Tipi</div>
+            <div class="section-title">Randevu Türü Seçiniz</div>
             <div class="appointment-types">
                 <div class="type-card" data-type="delivery" onclick="selectAppointmentType('delivery')">
-                    <h3>📦 Teslim Randevusu</h3>
-                    <p>Günlük max 4 randevu</p>
+                    <h3>Teslim Randevusu</h3>
                 </div>
                 <div class="type-card" data-type="meeting" onclick="selectAppointmentType('meeting')">
-                    <h3>💼 Görüşme Randevusu</h3>
-                    <p>Limitsiz randevu</p>
+                    <h3>Görüşme Randevusu</h3>
                 </div>
             </div>
         </div>
 
         <!-- Aylık Takvim -->
         <div class="section" id="calendarSection" style="display: none;">
-            <div class="section-title">📆 Tarih Seçin</div>
+            <div class="section-title">Tarih Seçiniz</div>
             <div class="calendar-container">
                 <div class="calendar-header">
                     <h2 id="currentMonth"></h2>
@@ -445,18 +554,18 @@
         </div>
 
         <div class="section" id="staffSection" style="display: none;">
-            <div class="section-title">👥 Çalışan Seçin</div>
+            <div class="section-title">Çalışan Seçiniz</div>
             <div id="staffLoading" class="loading" style="display: none;">Yükleniyor...</div>
             <div class="staff-select" id="staffList"></div>
         </div>
 
         <div class="section" id="timeSection" style="display: none;">
-            <div class="section-title">🕐 Saat Seçin</div>
+            <div class="section-title">Saat Seçiniz</div>
             <div class="available-slots" id="timeSlots"></div>
         </div>
 
         <div class="section" id="detailsSection" style="display: none;">
-            <div class="section-title">📝 Bilgileriniz</div>
+            <div class="section-title">İletişim Bilgileriniz</div>
             <div class="input-group">
                 <label for="customerName">Adınız Soyadınız *</label>
                 <input type="text" id="customerName" placeholder="Örn: Ahmet Yılmaz" required>
@@ -480,7 +589,7 @@
         </button>
 
         <div class="info-box">
-            <p><strong>ℹ️ Bilgilendirme:</strong> Randevunuz onaylandıktan sonra size SMS ve e-posta ile bilgilendirme yapılacaktır.</p>
+            <p><strong>ℹ️ Bilgilendirme:</strong> Randevunuz onaylandıktan sonra size Whatsapp ve e-posta ile bilgilendirme yapılacaktır.</p>
         </div>
     </div>
 
@@ -528,8 +637,7 @@
                 await loadStaffMembers();
                 const staff = staffMembers.find(s => s.id == specificStaffId);
                 if (staff) {
-                    document.getElementById('staffHeader').textContent =
-                        staff.name + ' ile randevu alın';
+                    document.getElementById('staffHeader').textContent = staff.name;
                     selectedStaff = parseInt(specificStaffId);
                 }
             } else {
@@ -929,18 +1037,38 @@
                     });
 
                     // Google Calendar'daki çakışma kontrolü
-                    const isBookedInCalendar = calendarEvents.some(event => {
+                    // Aynı saatteki TÜM randevuları say (çalışan farketmeksizin)
+                    const sameTimeEvents = calendarEvents.filter(event => {
                         if (!event.start || !event.start.dateTime) return false;
                         const t = new Date(event.start.dateTime);
                         const eventTime = String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
-
-                        // Eğer event belirli bir staff'a ait değilse, genel olarak bloklansın
-                        const eventStaffId = event.extendedProperties?.private?.staffId;
-                        if (!eventStaffId || eventStaffId === String(selectedStaff)) {
-                            return eventTime === timeStr;
-                        }
-                        return false;
+                        return eventTime === timeStr;
                     });
+
+                    let isBookedInCalendar = false;
+
+                    // Maksimum 2 servis masası var, 3. randevu alınamaz
+                    if (sameTimeEvents.length >= 2) {
+                        isBookedInCalendar = true;
+                    } else {
+                        // Aynı çalışanda randevu var mı kontrol et
+                        isBookedInCalendar = sameTimeEvents.some(event => {
+                            const eventStaffId = event.extendedProperties?.private?.staffId;
+                            const eventAppointmentType = event.extendedProperties?.private?.appointmentType;
+
+                            // TESLİM randevusu kontrolü: Eğer o saatte BAŞKA BİR ÇALIŞANDA TESLİM varsa bloke et
+                            if (selectedAppointmentType === 'delivery' && eventAppointmentType === 'delivery') {
+                                return true;
+                            }
+
+                            // Aynı çalışanın randevusu veya genel randevu
+                            if (!eventStaffId || eventStaffId === String(selectedStaff)) {
+                                return true;
+                            }
+
+                            return false;
+                        });
+                    }
 
                     const isBooked = isBookedInSystem || isBookedInCalendar || isPastTime;
 
