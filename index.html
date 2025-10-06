@@ -1650,43 +1650,31 @@
         }
 
         function addToCalendar() {
-            // iCalendar (.ics) formatı - direkt takvim uygulamasını açar
             const date = new Date(selectedDate + 'T' + selectedTime);
             const endDate = new Date(date.getTime() + CONFIG.APPOINTMENT_HOURS.interval * 60000);
 
-            const formatDateForICS = (d) => {
+            const formatDateForGoogle = (d) => {
                 return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
             };
 
-            const icsContent = [
-                'BEGIN:VCALENDAR',
-                'VERSION:2.0',
-                'PRODID:-//Rolex//Randevu Sistemi//TR',
-                'CALSCALE:GREGORIAN',
-                'METHOD:PUBLISH',
-                'BEGIN:VEVENT',
-                'DTSTART:' + formatDateForICS(date),
-                'DTEND:' + formatDateForICS(endDate),
-                'SUMMARY:Rolex Randevu',
-                'DESCRIPTION:Randevunuz onaylandı',
-                'LOCATION:Rolex İzmir İstinyepark',
-                'STATUS:CONFIRMED',
-                'SEQUENCE:0',
-                'END:VEVENT',
-                'END:VCALENDAR'
-            ].join('\r\n');
+            // Cihaz algılama
+            const isAppleDevice = /iPhone|iPad|iPod|Macintosh/.test(navigator.userAgent);
 
-            // Direkt takvim uygulamasını aç
-            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
+            if (isAppleDevice) {
+                // Apple cihazlar için Google Calendar web arayüzü
+                const startTime = formatDateForGoogle(date);
+                const endTime = formatDateForGoogle(endDate);
+                const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Rolex Randevu')}&dates=${startTime}/${endTime}&details=${encodeURIComponent('Randevunuz onaylandı')}&location=${encodeURIComponent('Rolex İzmir İstinyepark')}`;
 
-            // Mobil cihazlarda direkt takvim uygulamasını açar
-            window.location.href = url;
+                window.open(calendarUrl, '_blank');
+            } else {
+                // Diğer cihazlar için Google Calendar web arayüzü
+                const startTime = formatDateForGoogle(date);
+                const endTime = formatDateForGoogle(endDate);
+                const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Rolex Randevu')}&dates=${startTime}/${endTime}&details=${encodeURIComponent('Randevunuz onaylandı')}&location=${encodeURIComponent('Rolex İzmir İstinyepark')}`;
 
-            // Cleanup after a delay
-            setTimeout(() => {
-                URL.revokeObjectURL(url);
-            }, 100);
+                window.open(calendarUrl, '_blank');
+            }
         }
     </script>
 </body>
