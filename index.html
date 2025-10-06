@@ -635,21 +635,30 @@
                 return { available: false, reason: 'Çalışan yok' };
             }
 
-            // Google Calendar'da o günün event sayısını kontrol et
+            // Google Calendar'dan SADECE TESLİM randevularını say
             const calendarEvents = googleCalendarEvents[dateStr] || [];
+            const now = new Date();
+            const todayStr = formatLocalDate(now);
 
-            // Eğer 4 veya daha fazla event varsa o günü kapat
-            if (calendarEvents.length >= 4) {
-                return { available: false, reason: 'Gün dolu (4 randevu)' };
-            }
+            let deliveryCount = calendarEvents.filter(event => {
+                // Sadece teslim randevularını say
+                if (event.extendedProperties?.private?.appointmentType !== 'delivery') {
+                    return false;
+                }
+
+                // Eğer bugünse ve saat geçmişse sayma
+                if (dateStr === todayStr && event.start?.dateTime) {
+                    const eventStart = new Date(event.start.dateTime);
+                    if (eventStart < now) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }).length;
 
             // Teslim randevusu için max 4 kontrolü
             if (selectedAppointmentType === 'delivery') {
-                const appointments = allAppointments[dateStr] || [];
-                const deliveryCount = appointments.filter(apt =>
-                    apt.extendedProperties?.private?.appointmentType === 'delivery'
-                ).length;
-
                 if (deliveryCount >= CONFIG.MAX_DAILY_DELIVERY_APPOINTMENTS) {
                     return { available: false, reason: 'Teslim randevuları dolu (Max 4)' };
                 }
@@ -863,13 +872,27 @@
             const container = document.getElementById('timeSlots');
             container.innerHTML = '';
 
+            const now = new Date();
+            const todayStr = formatLocalDate(now);
+            const isToday = selectedDate === todayStr;
+
+            // Google Calendar'dan SADECE gelecekteki TESLİM randevularını say
+            const calendarEvents = googleCalendarEvents[selectedDate] || [];
+            let deliveryCount = calendarEvents.filter(event => {
+                if (event.extendedProperties?.private?.appointmentType !== 'delivery') {
+                    return false;
+                }
+                if (isToday && event.start?.dateTime) {
+                    const eventStart = new Date(event.start.dateTime);
+                    if (eventStart < now) {
+                        return false;
+                    }
+                }
+                return true;
+            }).length;
+
             // Teslim randevusu için max 4 kontrolü
             if (selectedAppointmentType === 'delivery') {
-                const appointments = allAppointments[selectedDate] || [];
-                const deliveryCount = appointments.filter(apt =>
-                    apt.extendedProperties?.private?.appointmentType === 'delivery'
-                ).length;
-
                 if (deliveryCount >= CONFIG.MAX_DAILY_DELIVERY_APPOINTMENTS) {
                     container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #dc3545;">Bu gun icin teslim randevulari dolu (Max 4).</div>';
                     return;
@@ -884,11 +907,18 @@
             const endHour = Math.min(shift.end, latest);
 
             const existingAppointments = allAppointments[selectedDate] || [];
-            const calendarEvents = googleCalendarEvents[selectedDate] || [];
 
             for (let hour = startHour; hour < endHour; hour++) {
                 for (let minute = 0; minute < 60; minute += interval) {
                     const timeStr = String(hour).padStart(2, '0') + ':' + String(minute).padStart(2, '0');
+
+                    // Geçmiş saat kontrolü (bugünse)
+                    let isPastTime = false;
+                    if (isToday) {
+                        const slotTime = new Date(now);
+                        slotTime.setHours(hour, minute, 0, 0);
+                        isPastTime = slotTime < now;
+                    }
 
                     // Randevu sistemindeki çakışma kontrolü
                     const isBookedInSystem = existingAppointments.some(apt => {
@@ -912,7 +942,7 @@
                         return false;
                     });
 
-                    const isBooked = isBookedInSystem || isBookedInCalendar;
+                    const isBooked = isBookedInSystem || isBookedInCalendar || isPastTime;
 
                     const btn = document.createElement('div');
                     btn.className = 'slot-btn' + (isBooked ? ' disabled' : '');
