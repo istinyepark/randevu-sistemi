@@ -1475,7 +1475,7 @@
         }
 
         function addToCalendar() {
-            // iCalendar (.ics) dosyası oluştur - tüm takvim uygulamalarında çalışır
+            // iCalendar (.ics) formatı - direkt takvim uygulamasını açar
             const date = new Date(selectedDate + 'T' + selectedTime);
             const endDate = new Date(date.getTime() + CONFIG.APPOINTMENT_HOURS.interval * 60000);
 
@@ -1501,15 +1501,9 @@
                 'END:VCALENDAR'
             ].join('\r\n');
 
-            // .ics dosyasını indir
-            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'rolex-randevu.ics';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(link.href);
+            // Direkt takvim uygulamasını aç (Apple Calendar, Google Calendar, vb.)
+            const dataUrl = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(icsContent);
+            window.open(dataUrl, '_blank');
         }
     </script>
 </body>
