@@ -374,10 +374,9 @@
                     🌅 Sabah (10-18) | 🌆 Akşam (14-22) | 🌞 Full (10-22) | ❌ İzinli
                 </div>
                 <div class="input-group">
-                    <label>Hafta Seç</label>
+                    <label>Hafta Seç (Pazartesi başlangıç)</label>
                     <div style="display: flex; gap: 10px;">
-                        <input type="date" id="weekDate" style="flex: 1;">
-                        <button class="btn btn-small" onclick="Shifts.load()">Yükle</button>
+                        <input type="week" id="weekDate" style="flex: 1;" onchange="Shifts.load()">
                         <button class="btn btn-secondary btn-small" onclick="Shifts.nextWeek()">Sonraki →</button>
                     </div>
                 </div>
@@ -399,8 +398,7 @@
                     <strong>📌 Bilgi:</strong> Google Calendar'da oluşturulan tüm randevuları buradan görebilirsiniz.
                 </div>
                 <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-                    <input type="date" id="filterDate" style="flex: 1;">
-                    <button class="btn btn-small" onclick="Appointments.load()">Filtrele</button>
+                    <input type="week" id="filterWeek" style="flex: 1;" onchange="Appointments.load()">
                 </div>
                 <div id="appointmentsList"></div>
             </div>
@@ -648,24 +646,37 @@
             currentWeek: null,
 
             init() {
+                // Bu haftayı ayarla (Pazartesi başlangıç)
                 const today = new Date();
-                const day = today.getDay();
-                const diff = day === 0 ? -6 : 1 - day;
-                const monday = new Date(today);
-                monday.setDate(today.getDate() + diff);
-                document.getElementById('weekDate').valueAsDate = monday;
+                const year = today.getFullYear();
+                const firstDayOfYear = new Date(year, 0, 1);
+                const pastDaysOfYear = (today - firstDayOfYear) / 86400000;
+                const weekNumber = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+                document.getElementById('weekDate').value = `${year}-W${String(weekNumber).padStart(2, '0')}`;
+                this.load();
             },
 
             async load() {
-                const date = document.getElementById('weekDate').value;
-                if (!date) {
-                    UI.showAlert('❌ Tarih seçin!', 'error');
+                const weekValue = document.getElementById('weekDate').value;
+                if (!weekValue) {
+                    UI.showAlert('❌ Hafta seçin!', 'error');
                     return;
                 }
-                this.currentWeek = date;
 
-                // Load shifts for this week
-                const weekStart = new Date(date);
+                // Hafta değerinden tarih aralığını hesapla
+                const [year, week] = weekValue.split('-W');
+                const firstDayOfYear = new Date(year, 0, 1);
+                const daysOffset = (week - 1) * 7;
+                const weekStart = new Date(firstDayOfYear.setDate(firstDayOfYear.getDate() + daysOffset));
+
+                // Pazartesi'yi bul
+                const dayOfWeek = weekStart.getDay();
+                const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+                weekStart.setDate(weekStart.getDate() + diff);
+
+                this.currentWeek = weekStart.toISOString().split('T')[0];
+
+                // Ay verilerini yükle
                 const monthStr = weekStart.toISOString().slice(0, 7);
 
                 try {
@@ -682,9 +693,18 @@
             },
 
             nextWeek() {
-                const current = new Date(document.getElementById('weekDate').value);
-                current.setDate(current.getDate() + 7);
-                document.getElementById('weekDate').valueAsDate = current;
+                const weekValue = document.getElementById('weekDate').value;
+                if (!weekValue) return;
+
+                const [year, week] = weekValue.split('-W');
+                const nextWeek = parseInt(week) + 1;
+
+                if (nextWeek > 52) {
+                    document.getElementById('weekDate').value = `${parseInt(year) + 1}-W01`;
+                } else {
+                    document.getElementById('weekDate').value = `${year}-W${String(nextWeek).padStart(2, '0')}`;
+                }
+
                 this.load();
             },
 
@@ -810,33 +830,65 @@
 
         // ==================== APPOINTMENTS ====================
         const Appointments = {
-            load() {
-                const filterDate = document.getElementById('filterDate').value;
-
+            async load() {
+                const filterWeek = document.getElementById('filterWeek').value;
                 const container = document.getElementById('appointmentsList');
                 container.innerHTML = '<p style="text-align:center;padding:20px;">Yükleniyor...</p>';
 
-                const date = filterDate || new Date().toISOString().split('T')[0];
-                const callback = 'loadApts_' + Date.now();
+                // Hafta seçildiyse hafta aralığını hesapla
+                let startDate, endDate;
+                if (filterWeek) {
+                    const [year, week] = filterWeek.split('-W');
+                    const firstDayOfYear = new Date(year, 0, 1);
+                    const daysOffset = (week - 1) * 7;
+                    startDate = new Date(firstDayOfYear.setDate(firstDayOfYear.getDate() + daysOffset));
+                    // Pazartesi'yi bul
+                    const dayOfWeek = startDate.getDay();
+                    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+                    startDate.setDate(startDate.getDate() + diff);
+                    endDate = new Date(startDate);
+                    endDate.setDate(endDate.getDate() + 6);
+                } else {
+                    // Varsayılan: Bu hafta
+                    const today = new Date();
+                    const dayOfWeek = today.getDay();
+                    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+                    startDate = new Date(today);
+                    startDate.setDate(startDate.getDate() + diff);
+                    endDate = new Date(startDate);
+                    endDate.setDate(endDate.getDate() + 6);
+                }
 
-                window[callback] = (data) => {
-                    if (data.error) {
-                        container.innerHTML = '<p style="text-align:center;color:#dc3545;padding:20px;">❌ Hata: ' + data.error + '</p>';
+                try {
+                    const result = await apiCall('getWeekAppointments', {
+                        startDate: startDate.toISOString().split('T')[0],
+                        endDate: endDate.toISOString().split('T')[0]
+                    });
+
+                    if (result.error) {
+                        container.innerHTML = '<p style="text-align:center;color:#dc3545;padding:20px;">❌ Hata: ' + result.error + '</p>';
                     } else {
-                        this.render(data.items || []);
+                        this.render(result.items || []);
                     }
-                    delete window[callback];
-                    document.getElementById('jsonpScript')?.remove();
-                };
+                } catch (error) {
+                    container.innerHTML = '<p style="text-align:center;color:#dc3545;padding:20px;">❌ Yükleme hatası</p>';
+                }
+            },
 
-                const script = document.createElement('script');
-                script.id = 'jsonpScript';
-                script.src = `${CONFIG.APPS_SCRIPT_URL}?action=getAppointments&date=${date}&callback=${callback}`;
-                script.onerror = () => {
-                    container.innerHTML = '<p style="text-align:center;color:#dc3545;padding:20px;">❌ Apps Script yüklenemedi.</p>';
-                    delete window[callback];
-                };
-                document.body.appendChild(script);
+            async deleteAppointment(eventId) {
+                if (!confirm('Bu randevuyu silmek istediğinizden emin misiniz?')) return;
+
+                try {
+                    const result = await apiCall('deleteAppointment', { eventId });
+                    if (result.success) {
+                        UI.showAlert('✅ Randevu silindi', 'success');
+                        this.load();
+                    } else {
+                        UI.showAlert('❌ Silme hatası: ' + result.error, 'error');
+                    }
+                } catch (error) {
+                    UI.showAlert('❌ Silme hatası', 'error');
+                }
             },
 
             render(appointments) {
@@ -847,36 +899,82 @@
                     return;
                 }
 
+                // Günlere göre grupla
+                const byDate = {};
+                appointments.forEach(apt => {
+                    const start = new Date(apt.start.dateTime || apt.start.date);
+                    const dateKey = start.toISOString().split('T')[0];
+                    if (!byDate[dateKey]) byDate[dateKey] = [];
+                    byDate[dateKey].push(apt);
+                });
+
                 const shiftLabels = {
                     'morning': '🌅 Sabah',
                     'evening': '🌆 Akşam',
                     'full': '🌞 Full'
                 };
 
-                container.innerHTML = appointments.map(apt => {
-                    const start = new Date(apt.start.dateTime || apt.start.date);
-                    const staffId = apt.extendedProperties?.private?.staffId;
-                    const staff = Data.staff.find(s => s.id === parseInt(staffId));
-                    const phone = apt.extendedProperties?.private?.customerPhone || '-';
-                    const shiftType = apt.extendedProperties?.private?.shiftType || '';
+                let html = '';
+                Object.keys(byDate).sort().forEach(dateKey => {
+                    const date = new Date(dateKey + 'T12:00:00');
+                    html += `<h3 style="margin: 20px 0 10px 0; color: #667eea; font-size: 16px;">
+                        ${date.toLocaleDateString('tr-TR', {weekday:'long', day:'numeric', month:'long'})}
+                    </h3>`;
 
-                    return `
-                        <div style="background:#f8f9fa;padding:15px;border-radius:10px;border-left:4px solid #667eea;margin-bottom:15px;">
-                            <div style="font-weight:600;color:#667eea;font-size:16px;">
-                                🕐 ${start.toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit'})}
+                    byDate[dateKey].forEach(apt => {
+                        const start = new Date(apt.start.dateTime || apt.start.date);
+                        const staffId = apt.extendedProperties?.private?.staffId;
+                        const staff = Data.staff.find(s => s.id === parseInt(staffId));
+                        const phone = apt.extendedProperties?.private?.customerPhone || '-';
+                        const shiftType = apt.extendedProperties?.private?.shiftType || '';
+                        const customerName = apt.summary?.replace('Randevu: ', '') || 'İsimsiz';
+
+                        html += `
+                            <div style="background:#f8f9fa;padding:15px;border-radius:10px;border-left:4px solid #667eea;margin-bottom:10px;">
+                                <div style="display: flex; justify-content: space-between; align-items: start;">
+                                    <div style="flex: 1;">
+                                        <div style="font-weight:600;color:#667eea;font-size:16px;">
+                                            🕐 ${start.toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit'})}
+                                        </div>
+                                        <div style="font-size:14px;line-height:1.8; margin-top: 8px;">
+                                            <strong>👤 Müşteri:</strong> ${customerName}<br>
+                                            <strong>📞 Telefon:</strong> ${phone}<br>
+                                            <strong>👨‍💼 Çalışan:</strong> ${staff?.name || '-'}<br>
+                                            <strong>⏰ Vardiya:</strong> ${shiftLabels[shiftType] || '-'}
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 5px;">
+                                        <button onclick="Appointments.sendWhatsApp('${phone}', '${customerName}', '${start.toLocaleString('tr-TR')}')"
+                                                class="btn btn-small" style="background: #25D366; border-color: #25D366; font-size: 12px; padding: 6px 12px;">
+                                            💬 WhatsApp
+                                        </button>
+                                        <button onclick="Appointments.deleteAppointment('${apt.id}')"
+                                                class="btn btn-small" style="background: #dc3545; border-color: #dc3545; font-size: 12px; padding: 6px 12px;">
+                                            🗑️ Sil
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                            <div style="font-size:14px;color:#666;margin-bottom:10px;">
-                                ${start.toLocaleDateString('tr-TR', {weekday:'long',year:'numeric',month:'long',day:'numeric'})}
-                            </div>
-                            <div style="font-size:14px;line-height:1.6;">
-                                <strong>👤 Müşteri:</strong> ${apt.summary?.replace('Randevu: ', '') || 'İsimsiz'}<br>
-                                <strong>📞 Telefon:</strong> ${phone}<br>
-                                <strong>👨‍💼 Çalışan:</strong> ${staff?.name || '-'}<br>
-                                <strong>⏰ Vardiya:</strong> ${shiftLabels[shiftType] || '-'}
-                            </div>
-                        </div>
-                    `;
-                }).join('');
+                        `;
+                    });
+                });
+
+                container.innerHTML = html;
+            },
+
+            sendWhatsApp(phone, customerName, dateTime) {
+                // Telefon numarasını temizle (sadece rakamlar)
+                const cleanPhone = phone.replace(/\D/g, '');
+                // +90 ile başlamıyorsa ekle
+                const fullPhone = cleanPhone.startsWith('90') ? cleanPhone : '90' + cleanPhone;
+
+                const message = encodeURIComponent(
+                    `Merhaba ${customerName},\n\n` +
+                    `${dateTime} tarihli randevunuzu onaylıyoruz.\n\n` +
+                    `Görüşmek üzere!`
+                );
+
+                window.open(`https://wa.me/${fullPhone}?text=${message}`, '_blank');
             }
         };
 
@@ -932,11 +1030,18 @@
 
             // Customer link setup
             const linkInput = document.getElementById('customerLink');
-            const customerLink = window.location.href.replace('admin.html', 'index.html').split('?')[0];
+            let customerLink = window.location.href.replace('admin.html', 'index.html').split('?')[0];
+            // Eğer admin içeriyorsa (örn: /admin), o da index olsun
+            customerLink = customerLink.replace('/admin', '/index.html');
             linkInput.value = customerLink;
 
-            // Filter date - bugün
-            document.getElementById('filterDate').valueAsDate = new Date();
+            // Hafta seçimi - bu hafta
+            const today = new Date();
+            const year = today.getFullYear();
+            const firstDayOfYear = new Date(year, 0, 1);
+            const pastDaysOfYear = (today - firstDayOfYear) / 86400000;
+            const weekNumber = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+            document.getElementById('filterWeek').value = `${year}-W${String(weekNumber).padStart(2, '0')}`;
         });
     </script>
 </body>
