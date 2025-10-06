@@ -444,8 +444,34 @@
 
         .loading {
             text-align: center;
-            padding: 20px;
-            color: #667eea;
+            padding: 40px 20px;
+        }
+
+        /* Apple-style spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto;
+            border: 3px solid #E8E8E8;
+            border-top-color: #1A1A2E;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .btn-spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            margin-right: 8px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #FAFAFA;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         /* Submit button */
@@ -808,7 +834,7 @@
 
         <div class="section" id="staffSection" style="display: none;">
             <div class="section-title">Çalışan Seçiniz</div>
-            <div id="staffLoading" class="loading" style="display: none;">Yükleniyor...</div>
+            <div id="staffLoading" class="loading" style="display: none;"><div class="spinner"></div></div>
             <div class="staff-select" id="staffList"></div>
         </div>
 
@@ -1061,7 +1087,7 @@
             const startDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
             const endDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
 
-            showAlert('Veriler yükleniyor...', 'info');
+            showLoading();
 
             try {
                 // Vardiyaları ve randevuları paralel yükle
@@ -1373,7 +1399,7 @@
 
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
-            btn.textContent = 'Randevu olusturuluyor...';
+            btn.innerHTML = '<span class="btn-spinner"></span> Randevu oluşturuluyor...';
 
             const staff = staffMembers.find(s => s.id == selectedStaff);
 
@@ -1421,6 +1447,10 @@
             document.getElementById('alertContainer').innerHTML = '';
         }
 
+        function showLoading() {
+            document.getElementById('alertContainer').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+        }
+
         function showSuccessPage(dateStr, timeStr, staffName) {
             // Tarihi formatla (12 Ekim 2025, Salı)
             const date = new Date(dateStr);
@@ -1433,7 +1463,7 @@
             const container = document.querySelector('.container');
             container.innerHTML = `
                 <div class="header">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 456.6 494.7" alt="">
+                    <svg class="rolex-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 456.6 494.7" alt="">
                                 <linearGradient id="a" x1="35.557" x2="461.064" y1="183.426" y2="330.853" gradientUnits="userSpaceOnUse">
                                     <stop offset="0" stop-color="#f9f4eb"></stop>
                                     <stop offset="0.089" stop-color="#f8f2e7"></stop>
@@ -1646,9 +1676,17 @@
                 'END:VCALENDAR'
             ].join('\r\n');
 
-            // Direkt takvim uygulamasını aç (Apple Calendar, Google Calendar, vb.)
-            const dataUrl = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(icsContent);
-            window.open(dataUrl, '_blank');
+            // Direkt takvim uygulamasını aç
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+
+            // Mobil cihazlarda direkt takvim uygulamasını açar
+            window.location.href = url;
+
+            // Cleanup after a delay
+            setTimeout(() => {
+                URL.revokeObjectURL(url);
+            }, 100);
         }
     </script>
 </body>
