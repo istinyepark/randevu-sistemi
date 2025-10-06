@@ -670,19 +670,21 @@
             if (!specificStaffId) {
                 displayAvailableStaff();
                 document.getElementById('staffSection').style.display = 'block';
+                document.getElementById('timeSection').style.display = 'none';
+                document.getElementById('detailsSection').style.display = 'none';
+                document.getElementById('submitBtn').style.display = 'none';
             } else {
                 // Özel link ise direkt saat seçimine geç
-                const shiftType = dayShifts[dateStr]?.[selectedStaff];
+                selectedStaff = specificStaffId;
+                const shiftType = dayShifts[dateStr]?.[specificStaffId];
                 if (shiftType) {
                     selectedShiftType = shiftType;
                     displayAvailableTimeSlots();
                     document.getElementById('timeSection').style.display = 'block';
+                    document.getElementById('detailsSection').style.display = 'none';
+                    document.getElementById('submitBtn').style.display = 'none';
                 }
             }
-
-            document.getElementById('timeSection').style.display = 'none';
-            document.getElementById('detailsSection').style.display = 'none';
-            document.getElementById('submitBtn').style.display = 'none';
         }
 
         // Ayın verilerini yükle
@@ -739,8 +741,11 @@
                 const allParams = { ...params, action, callback };
                 const url = CONFIG.APPS_SCRIPT_URL + '?' + new URLSearchParams(allParams).toString();
 
+                let timeoutId = null;
+
                 // Callback'i ÖNCE tanımla
                 window[callback] = function(data) {
+                    if (timeoutId) clearTimeout(timeoutId);
                     delete window[callback];
                     const scriptEl = document.getElementById('jsonpScript_' + callback);
                     if (scriptEl) {
@@ -749,21 +754,8 @@
                     resolve(data);
                 };
 
-                // Sonra script'i ekle
-                const script = document.createElement('script');
-                script.id = 'jsonpScript_' + callback;
-                script.src = url;
-                script.onerror = (error) => {
-                    delete window[callback];
-                    const scriptEl = document.getElementById('jsonpScript_' + callback);
-                    if (scriptEl) {
-                        scriptEl.remove();
-                    }
-                    reject(new Error('API cagrisi basarisiz'));
-                };
-
-                // Timeout ekle (10 saniye)
-                const timeoutId = setTimeout(() => {
+                // Timeout ekle (30 saniye)
+                timeoutId = setTimeout(() => {
                     if (window[callback]) {
                         delete window[callback];
                         const scriptEl = document.getElementById('jsonpScript_' + callback);
@@ -772,13 +764,20 @@
                         }
                         reject(new Error('Timeout - API cevap vermedi'));
                     }
-                }, 10000);
+                }, 30000);
 
-                // Response geldiğinde timeout'u temizle
-                const originalCallback = window[callback];
-                window[callback] = function(data) {
-                    clearTimeout(timeoutId);
-                    originalCallback(data);
+                // Sonra script'i ekle
+                const script = document.createElement('script');
+                script.id = 'jsonpScript_' + callback;
+                script.src = url;
+                script.onerror = (error) => {
+                    if (timeoutId) clearTimeout(timeoutId);
+                    delete window[callback];
+                    const scriptEl = document.getElementById('jsonpScript_' + callback);
+                    if (scriptEl) {
+                        scriptEl.remove();
+                    }
+                    reject(new Error('API cagrisi basarisiz'));
                 };
 
                 document.body.appendChild(script);
