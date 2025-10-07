@@ -1879,15 +1879,20 @@
             const date = new Date(selectedDate + 'T' + selectedTime);
             const endDate = new Date(date.getTime() + CONFIG.APPOINTMENT_HOURS.interval * 60000);
 
-            const formatDateForGoogle = (d) => {
-                return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-            };
+            // .ics içeriği oluştur
+            const icsContent = generateICS(date, endDate);
 
-            const startTime = formatDateForGoogle(date);
-            const endTime = formatDateForGoogle(endDate);
-            const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Rolex Randevu')}&dates=${startTime}/${endTime}&details=${encodeURIComponent('Randevunuz onaylandı')}&location=${encodeURIComponent('Rolex İzmir İstinyepark')}`;
+            // Data URL ile window.open kullan (mobil cihazlarda Google Calendar app'ini önerir)
+            const dataUrl = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(icsContent);
+            const newWindow = window.open(dataUrl, '_blank');
 
-            window.open(calendarUrl, '_blank');
+            // Sekmeyi otomatik kapat (2 saniye sonra)
+            if (newWindow) {
+                setTimeout(() => {
+                    newWindow.close();
+                }, 2000);
+            }
+
             closeCalendarModal();
         }
 
@@ -1895,15 +1900,20 @@
             const date = new Date(selectedDate + 'T' + selectedTime);
             const endDate = new Date(date.getTime() + CONFIG.APPOINTMENT_HOURS.interval * 60000);
 
-            const formatDateForOutlook = (d) => {
-                return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-            };
+            // .ics içeriği oluştur
+            const icsContent = generateICS(date, endDate);
 
-            const startTime = formatDateForOutlook(date);
-            const endTime = formatDateForOutlook(endDate);
-            const outlookUrl = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent('Rolex Randevu')}&startdt=${startTime}&enddt=${endTime}&body=${encodeURIComponent('Randevunuz onaylandı')}&location=${encodeURIComponent('Rolex İzmir İstinyepark')}`;
+            // Data URL ile window.open kullan (mobil cihazlarda Outlook app'ini önerir)
+            const dataUrl = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(icsContent);
+            const newWindow = window.open(dataUrl, '_blank');
 
-            window.open(outlookUrl, '_blank');
+            // Sekmeyi otomatik kapat (2 saniye sonra)
+            if (newWindow) {
+                setTimeout(() => {
+                    newWindow.close();
+                }, 2000);
+            }
+
             closeCalendarModal();
         }
 
