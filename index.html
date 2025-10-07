@@ -1832,6 +1832,7 @@
                         <div class="details-header">Randevu Bilgileriniz</div>
                         <div class="detail-item">${formattedDate}</div>
                         <div class="detail-item">Saat ${timeStr}</div>
+                        <div class="detail-item">İlgili: ${staffName}</div>
                         <div class="detail-location">Rolex İzmir İstinyepark</div>
                     </div>
 
@@ -1893,24 +1894,6 @@
             closeCalendarModal();
         }
 
-        function addToCalendarOutlook() {
-            const date = new Date(selectedDate + 'T' + selectedTime);
-            const endDate = new Date(date.getTime() + CONFIG.APPOINTMENT_HOURS.interval * 60000);
-
-            const formatDateForOutlook = (d) => {
-                return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-            };
-
-            const startTime = formatDateForOutlook(date);
-            const endTime = formatDateForOutlook(endDate);
-
-            // Outlook web URL (mobil cihazlarda app'i açar eğer kuruluysa)
-            const outlookUrl = `https://outlook.live.com/calendar/0/deeplink/compose?subject=${encodeURIComponent('Rolex Randevu')}&startdt=${startTime}&enddt=${endTime}&body=${encodeURIComponent('Randevunuz onaylandı')}&location=${encodeURIComponent('Rolex İzmir İstinyepark')}`;
-
-            window.open(outlookUrl, '_blank');
-            closeCalendarModal();
-        }
-
         function generateICS(startDate, endDate) {
             const formatICSDate = (d) => {
                 return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
@@ -1947,10 +1930,6 @@ END:VCALENDAR`;
 
                 <button class="calendar-option-btn" onclick="addToCalendarGoogle()">
                     <span>Google Calendar</span>
-                </button>
-
-                <button class="calendar-option-btn" onclick="addToCalendarOutlook()">
-                    <span>Outlook Calendar</span>
                 </button>
             </div>
 
