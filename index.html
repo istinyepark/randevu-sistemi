@@ -619,100 +619,250 @@
             color: #FAFAFA;
         }
 
-        /* Calendar Modal */
+        /* Calendar Selection Modal */
         .calendar-modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(26, 26, 46, 0.7);
-            z-index: 1000;
+            right: 0;
+            bottom: 0;
+            background: rgba(26, 26, 46, 0.85);
+            z-index: 9998;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
         }
 
         .calendar-modal.active {
             display: flex;
+            animation: fadeIn 0.3s ease;
         }
 
         .calendar-modal-content {
             background: white;
-            border-radius: 2px;
-            padding: 40px;
-            max-width: 450px;
+            padding: 45px 40px;
+            border-radius: 0;
+            max-width: 420px;
             width: 90%;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         }
 
         .calendar-modal-header {
             font-family: 'Playfair Display', serif;
-            font-size: 22px;
-            font-weight: 400;
-            letter-spacing: 1px;
+            font-size: 24px;
+            font-weight: 300;
             color: #1A1A2E;
-            margin-bottom: 10px;
-            text-align: center;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
         }
 
         .calendar-modal-subtitle {
-            font-size: 12px;
+            font-size: 13px;
             color: #757575;
-            text-align: center;
             margin-bottom: 30px;
-            font-weight: 300;
+            line-height: 1.6;
         }
 
         .calendar-options {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
 
         .calendar-option-btn {
-            width: 100%;
-            padding: 16px 20px;
+            padding: 18px 24px;
             background: #FAFAFA;
-            border: 1px solid #E8E8E8;
+            border: 2px solid #E8E8E8;
             border-radius: 2px;
-            font-size: 13px;
-            letter-spacing: 1px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
             font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #1A1A2E;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-family: 'Montserrat', sans-serif;
-            color: #1A1A2E;
-            text-align: center;
         }
 
         .calendar-option-btn:hover {
             background: white;
             border-color: #C9A55A;
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(201, 165, 90, 0.15);
         }
 
         .modal-close-btn {
-            width: 100%;
-            padding: 12px 20px;
+            padding: 12px 30px;
             background: transparent;
-            border: 1px solid #E8E8E8;
-            border-radius: 2px;
+            color: #757575;
+            border: none;
             font-size: 11px;
             letter-spacing: 2px;
             text-transform: uppercase;
-            font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Montserrat', sans-serif;
-            color: #757575;
+            transition: color 0.3s ease;
         }
 
         .modal-close-btn:hover {
-            border-color: #1A1A2E;
             color: #1A1A2E;
+        }
+
+        /* iOS Guide Modal */
+        .guide-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(26, 26, 46, 0.85);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(8px);
+        }
+
+        .guide-modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .guide-content {
+            background: white;
+            padding: 45px 40px;
+            border-radius: 0;
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .guide-icon {
+            font-size: 56px;
+            margin-bottom: 25px;
+        }
+
+        .guide-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            font-weight: 400;
+            color: #1A1A2E;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .guide-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.7;
+            letter-spacing: 0.3px;
+        }
+
+        .guide-btn {
+            background: #1A1A2E;
+            color: white;
+            border: none;
+            padding: 14px 40px;
+            border-radius: 0;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-family: 'Montserrat', sans-serif;
+            transition: all 0.3s ease;
+            border: 1px solid #1A1A2E;
+        }
+
+        .guide-btn:hover {
+            background: white;
+            color: #1A1A2E;
+            box-shadow: 0 4px 15px rgba(26, 26, 46, 0.15);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1A1A2E;
+            color: white;
+            padding: 16px 32px;
+            border-radius: 0;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 10000;
+            animation: toastSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            font-weight: 400;
+        }
+
+        .toast.success {
+            border-left: 3px solid #C9A55A;
+        }
+
+        .toast.success::before {
+            content: '✓';
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            background: #C9A55A;
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        @keyframes toastSlideUp {
+            from {
+                opacity: 0;
+                transform: translate(-50%, 30px);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translate(-50%, 10px);
+            }
+        }
+
+        .toast.fade-out {
+            animation: fadeOut 0.5s ease forwards;
         }
 
         @media (max-width: 600px) {
@@ -988,7 +1138,13 @@
                 latest: 21,
                 interval: 60
             },
-            MAX_DAILY_DELIVERY_APPOINTMENTS: 4  // Teslim randevuları için max limit
+            MAX_DAILY_DELIVERY_APPOINTMENTS: 4,  // Teslim randevuları için max limit
+            APPOINTMENT_TYPES: [
+                { value: 'delivery', name: 'Saat Teslim Alma' },
+                { value: 'service', name: 'Servis & Bakım' },
+                { value: 'consultation', name: 'Ürün Danışmanlığı' },
+                { value: 'general', name: 'Genel Görüşme' }
+            ]
         };
 
         // Global state
@@ -1094,6 +1250,9 @@
                 date.setHours(0, 0, 0, 0);
                 const dateStr = formatLocalDate(date);
 
+                // data-date attribute ekle
+                dayEl.setAttribute('data-date', dateStr);
+
                 // Bugün
                 if (date.getTime() === today.getTime()) {
                     dayEl.classList.add('today');
@@ -1164,7 +1323,11 @@
 
             // Seçili günü işaretle
             document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
-            event.currentTarget.classList.add('selected');
+            document.querySelectorAll('.calendar-day').forEach(d => {
+                if (d.getAttribute('data-date') === dateStr) {
+                    d.classList.add('selected');
+                }
+            });
 
             // Çalışan seçimi göster (eğer özel link değilse)
             if (!specificStaffId) {
@@ -1176,7 +1339,7 @@
             } else {
                 // Özel link ise direkt saat seçimine geç
                 selectedStaff = parseInt(specificStaffId);
-                const shiftType = dayShifts[dateStr]?.[specificStaffId];
+                const shiftType = dayShifts[dateStr]?.[parseInt(specificStaffId)];
                 if (shiftType) {
                     selectedShiftType = shiftType;
                     displayAvailableTimeSlots();
@@ -1550,7 +1713,8 @@
                         staffName: staff.name,
                         date: selectedDate,
                         time: selectedTime,
-                        appointmentType: selectedAppointmentType
+                        appointmentType: selectedAppointmentType,
+                        duration: CONFIG.APPOINTMENT_HOURS.interval
                     };
                     showSuccessPage(selectedDate, selectedTime, staff.name, note);
                 } else {
@@ -1856,11 +2020,23 @@
                         <div class="detail-location">Rolex İzmir İstinyepark</div>
                     </div>
 
-                    <button class="btn-secondary" onclick="addToCalendar()">Takvime Ekle</button>
+                    <button class="btn-secondary" id="addToCalendarBtn">Takvime Ekle</button>
                 </div>
             `;
+
+            // Event listener'ı HTML eklendikten SONRA ekle
+            setTimeout(() => {
+                const calendarBtn = document.getElementById('addToCalendarBtn');
+                if (calendarBtn) {
+                    console.log('Takvime Ekle butonu bulundu, event listener ekleniyor...');
+                    calendarBtn.addEventListener('click', addToCalendar);
+                } else {
+                    console.error('Takvime Ekle butonu bulunamadı!');
+                }
+            }, 100);
         }
 
+        // Takvime ekleme - Modal aç
         function addToCalendar() {
             openCalendarModal();
         }
@@ -1874,31 +2050,182 @@
             document.getElementById('calendarModal').classList.remove('active');
         }
 
-        // Takvime ekleme fonksiyonları
+        // Apple Calendar için ICS indirme (Safari detection ile)
         function addToCalendarApple() {
-            const date = new Date(selectedDate + 'T' + selectedTime);
-            const endDate = new Date(date.getTime() + CONFIG.APPOINTMENT_HOURS.interval * 60000);
-
-            // .ics içeriği oluştur
-            const icsContent = generateICS(date, endDate);
-
-            // Data URL ile window.open kullan
-            const dataUrl = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(icsContent);
-            const newWindow = window.open(dataUrl, '_blank');
-
-            // Sekmeyi otomatik kapat (2 saniye sonra)
-            if (newWindow) {
-                setTimeout(() => {
-                    newWindow.close();
-                }, 2000);
+            if (!lastAppointmentData) {
+                alert('Randevu bilgileri bulunamadı. Lütfen tekrar deneyin.');
+                closeCalendarModal();
+                return;
             }
 
-            closeCalendarModal();
+            const platform = detectPlatform();
+            const date = new Date(lastAppointmentData.date + 'T' + lastAppointmentData.time);
+            const duration = lastAppointmentData.duration || CONFIG.APPOINTMENT_HOURS.interval || 60;
+            const endDate = new Date(date.getTime() + duration * 60000);
+            const icsContent = generateICS(date, endDate);
+
+            // Safari + Apple cihazında data URL ile Calendar app'i direkt aç
+            if ((platform.ios || platform.macos) && platform.safari) {
+                const base64 = btoa(unescape(encodeURIComponent(icsContent)));
+                const dataUrl = `data:text/calendar;base64,${base64}`;
+                window.location.href = dataUrl;
+                closeCalendarModal();
+                showToast('📅 Apple Calendar açılıyor...', 'success');
+            } else {
+                // Diğer tarayıcılarda Blob download (dosya adı garantili)
+                const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'rolex-randevu.ics';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                closeCalendarModal();
+                showToast('✅ ICS dosyası indirildi', 'success');
+            }
         }
 
+        // Webcal Protokolü (Apple Safari için en iyi yöntem)
+        function useWebcalProtocol() {
+            console.log('useWebcalProtocol fonksiyonu çağrıldı');
+            const date = new Date(lastAppointmentData.date + 'T' + lastAppointmentData.time);
+            const duration = lastAppointmentData.duration || CONFIG.APPOINTMENT_HOURS.interval || 60;
+            const endDate = new Date(date.getTime() + duration * 60000);
+
+            console.log('Tarih:', date, 'Bitiş:', endDate);
+
+            const icsContent = generateICS(date, endDate);
+            const base64 = btoa(unescape(encodeURIComponent(icsContent)));
+            const dataUrl = `data:text/calendar;base64,${base64}`;
+
+            console.log('ICS içeriği oluşturuldu, takvim açılıyor...');
+
+            // Safari'de Calendar app'i açar
+            window.location.href = dataUrl;
+
+            showToast('📅 Calendar uygulaması açılıyor...', 'success');
+
+            // Fallback: 3 saniye sonra çalışmadıysa ICS indir
+            setTimeout(() => {
+                if (document.hasFocus()) {
+                    console.log('Webcal çalışmadı, ICS indiriliyor');
+                    downloadICSForApple('fallback');
+                }
+            }, 3000);
+        }
+
+        // iOS Rehber Modalı
+        function showIOSGuide() {
+            const modal = document.getElementById('guideModal');
+            if (modal) {
+                modal.classList.add('active');
+            }
+        }
+
+        function closeGuide() {
+            const modal = document.getElementById('guideModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        }
+
+        // ==================== YARDIMCI FONKSİYONLAR ====================
+
+        // Gelişmiş Platform ve Tarayıcı Tespiti
+        function detectPlatform() {
+            const ua = navigator.userAgent;
+            const platform = navigator.platform || '';
+
+            const detection = {
+                // Operating System
+                ios: /iPhone|iPad|iPod/.test(ua) && !window.MSStream,
+                android: /Android/.test(ua),
+                macos: /Mac/.test(platform) && !/iPhone|iPad|iPod/.test(ua),
+                windows: /Win/.test(platform),
+
+                // Browser
+                safari: /Safari/.test(ua) && !/Chrome|CriOS/.test(ua),
+                chrome: /Chrome|CriOS/.test(ua),
+                firefox: /Firefox|FxiOS/.test(ua),
+                edge: /Edg/.test(ua),
+
+                // Mobile
+                mobile: /iPhone|iPad|iPod|Android/.test(ua)
+            };
+
+            return detection;
+        }
+
+        // Toast bildirim göster
+        function showToast(message, type = 'success') {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${message}</span>`;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('fade-out');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        // ==================== TAKVİME EKLEME FONKSİYONLARI ====================
+
+        // Apple cihazlar için ICS İndirme
+        function downloadICSForApple(platformType) {
+            console.log('downloadICSForApple fonksiyonu çağrıldı, platform:', platformType);
+            const date = new Date(lastAppointmentData.date + 'T' + lastAppointmentData.time);
+            const duration = lastAppointmentData.duration || CONFIG.APPOINTMENT_HOURS.interval || 60;
+            const endDate = new Date(date.getTime() + duration * 60000);
+
+            const icsContent = generateICS(date, endDate);
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+
+            link.href = url;
+            link.download = 'rolex-randevu.ics';
+            link.style.display = 'none';
+
+            if (platformType === 'ios') {
+                link.setAttribute('target', '_blank');
+                link.setAttribute('rel', 'noopener');
+            }
+
+            console.log('ICS dosyası indiriliyor...');
+            document.body.appendChild(link);
+            link.click();
+
+            if (platformType === 'ios') {
+                setTimeout(() => showIOSGuide(), 1500);
+            } else {
+                showToast('✅ ICS dosyası indirildi', 'success');
+            }
+
+            setTimeout(() => {
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }, 100);
+        }
+
+        // Google Calendar
         function addToCalendarGoogle() {
-            const date = new Date(selectedDate + 'T' + selectedTime);
-            const endDate = new Date(date.getTime() + CONFIG.APPOINTMENT_HOURS.interval * 60000);
+            console.log('addToCalendarGoogle fonksiyonu çağrıldı');
+            if (!lastAppointmentData) {
+                alert('Randevu bilgileri bulunamadı. Lütfen tekrar deneyin.');
+                return;
+            }
+
+            const date = new Date(lastAppointmentData.date + 'T' + lastAppointmentData.time);
+            const duration = lastAppointmentData.duration || CONFIG.APPOINTMENT_HOURS.interval || 60;
+            const endDate = new Date(date.getTime() + duration * 60000);
+
+            console.log('Google Calendar için tarih hazırlanıyor...');
 
             const formatDateForGoogle = (d) => {
                 return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
@@ -1909,44 +2236,153 @@
 
             // Detaylı randevu bilgileri oluştur
             let details = 'RANDEVU BİLGİLERİ\n\n';
-            if (lastAppointmentData) {
-                details += `Müşteri: ${lastAppointmentData.customerName}\n`;
-                details += `İletişim: ${lastAppointmentData.customerPhone}\n`;
+            details += `Müşteri: ${lastAppointmentData.customerName}\n`;
+            details += `İletişim: ${lastAppointmentData.customerPhone}\n`;
+            if (lastAppointmentData.customerEmail) {
                 details += `E-posta: ${lastAppointmentData.customerEmail}\n`;
+            }
 
-                // Tarih formatla
-                const appointmentDate = new Date(lastAppointmentData.date);
-                const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                const formattedDate = appointmentDate.toLocaleDateString('tr-TR', options);
+            // Tarih formatla
+            const appointmentDate = new Date(lastAppointmentData.date);
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = appointmentDate.toLocaleDateString('tr-TR', options);
 
-                details += `Tarih: ${formattedDate}\n`;
-                details += `Saat: ${lastAppointmentData.time}\n`;
+            details += `Tarih: ${formattedDate}\n`;
+            details += `Saat: ${lastAppointmentData.time}\n`;
 
-                // Randevu türü
-                const appointmentTypeName = CONFIG.APPOINTMENT_TYPES.find(t => t.value === lastAppointmentData.appointmentType)?.name || 'Genel';
-                details += `Konu: ${appointmentTypeName}\n`;
-                details += `İlgili: ${lastAppointmentData.staffName}\n`;
+            // Randevu türü
+            const appointmentTypeName = CONFIG.APPOINTMENT_TYPES?.find(t => t.value === lastAppointmentData.appointmentType)?.name || 'Genel';
+            details += `Konu: ${appointmentTypeName}\n`;
+            details += `İlgili: ${lastAppointmentData.staffName}\n`;
 
-                if (lastAppointmentData.customerNote) {
-                    details += `Ek Bilgi: ${lastAppointmentData.customerNote}\n`;
-                }
-            } else {
-                details = 'Randevunuz onaylandı';
+            if (lastAppointmentData.customerNote) {
+                details += `Ek Bilgi: ${lastAppointmentData.customerNote}\n`;
             }
 
             // Google Calendar web URL (mobil cihazlarda app'i açar eğer kuruluysa)
-            const eventTitle = lastAppointmentData
-                ? `${lastAppointmentData.customerName} - ${lastAppointmentData.staffName}`
-                : 'Rolex Randevu';
+            const eventTitle = `${lastAppointmentData.customerName} - ${lastAppointmentData.staffName}`;
             const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(eventTitle)}&dates=${startTime}/${endTime}&details=${encodeURIComponent(details)}&location=${encodeURIComponent('Rolex İzmir İstinyepark')}`;
 
+            console.log('Google Calendar URL oluşturuldu:', calendarUrl);
             window.open(calendarUrl, '_blank');
             closeCalendarModal();
+            showToast('✅ Google Calendar açıldı', 'success');
+        }
+
+        // Outlook Calendar
+        function addToCalendarOutlook() {
+            if (!lastAppointmentData) {
+                alert('Randevu bilgileri bulunamadı. Lütfen tekrar deneyin.');
+                return;
+            }
+
+            const date = new Date(lastAppointmentData.date + 'T' + lastAppointmentData.time);
+            const duration = lastAppointmentData.duration || CONFIG.APPOINTMENT_HOURS.interval || 60;
+            const endDate = new Date(date.getTime() + duration * 60000);
+
+            // Detaylı randevu bilgileri oluştur
+            let details = 'RANDEVU BİLGİLERİ<br><br>';
+            details += `Müşteri: ${lastAppointmentData.customerName}<br>`;
+            details += `İletişim: ${lastAppointmentData.customerPhone}<br>`;
+            if (lastAppointmentData.customerEmail) {
+                details += `E-posta: ${lastAppointmentData.customerEmail}<br>`;
+            }
+            details += `Tarih: ${lastAppointmentData.date}<br>`;
+            details += `Saat: ${lastAppointmentData.time}<br>`;
+
+            const appointmentTypeName = CONFIG.APPOINTMENT_TYPES?.find(t => t.value === lastAppointmentData.appointmentType)?.name || 'Genel';
+            details += `Konu: ${appointmentTypeName}<br>`;
+            details += `İlgili: ${lastAppointmentData.staffName}<br>`;
+
+            if (lastAppointmentData.customerNote) {
+                details += `Ek Bilgi: ${lastAppointmentData.customerNote}<br>`;
+            }
+
+            const eventTitle = `${lastAppointmentData.customerName} - ${lastAppointmentData.staffName}`;
+
+            const outlookUrl = new URL('https://outlook.live.com/calendar/0/deeplink/compose');
+            outlookUrl.searchParams.append('path', '/calendar/action/compose');
+            outlookUrl.searchParams.append('rru', 'addevent');
+            outlookUrl.searchParams.append('startdt', date.toISOString());
+            outlookUrl.searchParams.append('enddt', endDate.toISOString());
+            outlookUrl.searchParams.append('subject', eventTitle);
+            outlookUrl.searchParams.append('location', 'Rolex İzmir İstinyepark');
+            outlookUrl.searchParams.append('body', details);
+
+            window.open(outlookUrl.toString(), '_blank');
+            closeCalendarModal();
+            showToast('✅ Outlook Calendar açıldı', 'success');
+        }
+
+        // Universal ICS Dosya İndirme (Herhangi bir takvim uygulaması için)
+        function downloadICSUniversal() {
+            if (!lastAppointmentData) {
+                alert('Randevu bilgileri bulunamadı. Lütfen tekrar deneyin.');
+                closeCalendarModal();
+                return;
+            }
+
+            const date = new Date(lastAppointmentData.date + 'T' + lastAppointmentData.time);
+            const duration = lastAppointmentData.duration || CONFIG.APPOINTMENT_HOURS.interval || 60;
+            const endDate = new Date(date.getTime() + duration * 60000);
+            const icsContent = generateICS(date, endDate);
+
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'rolex-randevu.ics';
+            document.body.appendChild(link);
+            link.click();
+
+            setTimeout(() => {
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                closeCalendarModal();
+                showToast('✅ Takvim dosyası (.ics) indirildi', 'success');
+            }, 100);
+        }
+
+        // ICS Dosya İndirme (Universal)
+        function downloadICSFile() {
+            console.log('downloadICSFile fonksiyonu çağrıldı');
+            if (!lastAppointmentData) {
+                alert('Randevu bilgileri bulunamadı. Lütfen tekrar deneyin.');
+                return;
+            }
+
+            const date = new Date(lastAppointmentData.date + 'T' + lastAppointmentData.time);
+            const duration = lastAppointmentData.duration || CONFIG.APPOINTMENT_HOURS.interval || 60;
+            const endDate = new Date(date.getTime() + duration * 60000);
+            const icsContent = generateICS(date, endDate);
+
+            console.log('ICS dosyası oluşturuluyor...');
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'rolex-randevu.ics';
+            document.body.appendChild(link);
+            link.click();
+            console.log('ICS dosyası indirme başlatıldı');
+
+            setTimeout(() => {
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                showToast('✅ Takvim dosyası (.ics) indirildi', 'success');
+            }, 100);
         }
 
         function generateICS(startDate, endDate) {
+            // İyileştirilmiş format fonksiyonu - TZID desteğiyle
             const formatICSDate = (d) => {
-                return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                const hours = String(d.getHours()).padStart(2, '0');
+                const minutes = String(d.getMinutes()).padStart(2, '0');
+                const seconds = String(d.getSeconds()).padStart(2, '0');
+                return `${year}${month}${day}T${hours}${minutes}${seconds}`;
             };
 
             // Detaylı randevu bilgileri oluştur
@@ -1957,7 +2393,10 @@
                 summary = `${lastAppointmentData.customerName} - ${lastAppointmentData.staffName}`;
                 description += `Müşteri: ${lastAppointmentData.customerName}\\n`;
                 description += `İletişim: ${lastAppointmentData.customerPhone}\\n`;
-                description += `E-posta: ${lastAppointmentData.customerEmail}\\n`;
+
+                if (lastAppointmentData.customerEmail) {
+                    description += `E-posta: ${lastAppointmentData.customerEmail}\\n`;
+                }
 
                 // Tarih formatla
                 const appointmentDate = new Date(lastAppointmentData.date);
@@ -1968,36 +2407,47 @@
                 description += `Saat: ${lastAppointmentData.time}\\n`;
 
                 // Randevu türü
-                const appointmentTypeName = CONFIG.APPOINTMENT_TYPES.find(t => t.value === lastAppointmentData.appointmentType)?.name || 'Genel';
+                const appointmentTypeName = CONFIG.APPOINTMENT_TYPES?.find(t => t.value === lastAppointmentData.appointmentType)?.name || 'Genel';
                 description += `Konu: ${appointmentTypeName}\\n`;
                 description += `İlgili: ${lastAppointmentData.staffName}\\n`;
 
                 if (lastAppointmentData.customerNote) {
                     description += `Ek Bilgi: ${lastAppointmentData.customerNote}\\n`;
                 }
+
+                description += `\\nLütfen kimlik belgenizi yanınızda bulundurun.`;
             } else {
                 description = 'Randevunuz onaylandı';
             }
 
-            return `BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Rolex//Randevu Sistemi//TR
-BEGIN:VEVENT
-UID:${Date.now()}@rolex-randevu.com
-DTSTAMP:${formatICSDate(new Date())}
-DTSTART:${formatICSDate(startDate)}
-DTEND:${formatICSDate(endDate)}
-SUMMARY:${summary}
-DESCRIPTION:${description}
-LOCATION:Rolex İzmir İstinyepark
-ORGANIZER;CN="Rolex İzmir İstinyepark":mailto:istinyeparkrolex35@gmail.com
-STATUS:CONFIRMED
-END:VEVENT
-END:VCALENDAR`;
+            // ICS içeriği - TZID ve VALARM ile geliştirilmiş
+            return [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//Rolex İzmir İstinyepark//Randevu Sistemi//TR',
+                'METHOD:PUBLISH',
+                'BEGIN:VEVENT',
+                `UID:rolex-${Date.now()}@istinyepark.com`,
+                `DTSTAMP:${formatICSDate(new Date())}Z`,
+                `DTSTART;TZID=Europe/Istanbul:${formatICSDate(startDate)}`,
+                `DTEND;TZID=Europe/Istanbul:${formatICSDate(endDate)}`,
+                `SUMMARY:${summary}`,
+                `DESCRIPTION:${description}`,
+                'LOCATION:Rolex İzmir İstinyepark',
+                'STATUS:CONFIRMED',
+                'ORGANIZER;CN=Rolex İzmir İstinyepark:mailto:istinyeparkrolex35@gmail.com',
+                'BEGIN:VALARM',
+                'TRIGGER:-PT30M',
+                'ACTION:DISPLAY',
+                'DESCRIPTION:Randevunuz 30 dakika sonra',
+                'END:VALARM',
+                'END:VEVENT',
+                'END:VCALENDAR'
+            ].join('\r\n');
         }
     </script>
 
-    <!-- Calendar Modal -->
+    <!-- Calendar Selection Modal -->
     <div id="calendarModal" class="calendar-modal">
         <div class="calendar-modal-content">
             <div class="calendar-modal-header">Takvim Seçin</div>
@@ -2005,16 +2455,44 @@ END:VCALENDAR`;
 
             <div class="calendar-options">
                 <button class="calendar-option-btn" onclick="addToCalendarApple()">
-                    <span>Apple Calendar</span>
+                    <span>🍎 Apple Calendar</span>
                 </button>
 
                 <button class="calendar-option-btn" onclick="addToCalendarGoogle()">
-                    <span>Google Calendar</span>
+                    <span>📅 Google Calendar</span>
+                </button>
+
+                <button class="calendar-option-btn" onclick="addToCalendarOutlook()">
+                    <span>📧 Outlook Calendar</span>
+                </button>
+
+                <button class="calendar-option-btn" onclick="downloadICSUniversal()">
+                    <span>📥 Dosya İndir (.ics)</span>
                 </button>
             </div>
 
             <button class="modal-close-btn" onclick="closeCalendarModal()">İptal</button>
         </div>
     </div>
+
+    <!-- iOS Guide Modal -->
+    <div id="guideModal" class="guide-modal">
+        <div class="guide-content">
+            <div class="guide-icon">📲</div>
+            <h3 class="guide-title">iOS - Son Adım</h3>
+            <p class="guide-text">İndirilenler'de "rolex-randevu.ics" dosyasına dokunun ve "Takvime Ekle" seçeneğini seçin</p>
+            <button class="guide-btn" id="guideCloseBtn">Anladım</button>
+        </div>
+    </div>
+
+    <script>
+        // Guide modal event listener - sayfa yüklendiğinde ekle
+        document.addEventListener('DOMContentLoaded', function() {
+            const guideCloseBtn = document.getElementById('guideCloseBtn');
+            if (guideCloseBtn) {
+                guideCloseBtn.addEventListener('click', closeGuide);
+            }
+        });
+    </script>
 </body>
 </html>
