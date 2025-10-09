@@ -481,7 +481,8 @@
     <script>
         // ==================== CONFIG ====================
         const CONFIG = {
-            APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyhfesSNFFvYN-SjwNGsOEf_5bKLFkFZkSnHC4l7XjaxmdSN-fr3chox2xRb30HlQ/exec'
+            APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyhfesSNFFvYN-SjwNGsOEf_5bKLFkFZkSnHC4l7XjaxmdSN-fr3chox2xRb30HlQ/exec',
+            BASE_URL: 'https://rolexizmiristinyepark.github.io/randevu/'
         };
 
         // ==================== API HELPER ====================
@@ -711,12 +712,8 @@
                     return;
                 }
 
-                let baseUrl = window.location.href.replace('admin.html', 'index.html').split('?')[0];
-                // Eğer admin içeriyorsa (örn: /admin), o da index olsun
-                baseUrl = baseUrl.replace('/admin', '/index.html');
-
                 container.innerHTML = Data.staff.filter(s => s.active).map(s => {
-                    const staffLink = `${baseUrl}?staff=${s.id}`;
+                    const staffLink = `${CONFIG.BASE_URL}?staff=${s.id}`;
                     return `
                         <div style="background:#f8f9fa;padding:15px;border-radius:10px;margin-bottom:15px;border-left:4px solid #667eea;">
                             <div style="font-weight:600;font-size:15px;margin-bottom:8px;">👤 ${s.name}</div>
@@ -1220,10 +1217,7 @@
 
             // Customer link setup
             const linkInput = document.getElementById('customerLink');
-            let customerLink = window.location.href.replace('admin.html', 'index.html').split('?')[0];
-            // Eğer admin içeriyorsa (örn: /admin), o da index olsun
-            customerLink = customerLink.replace('/admin', '/index.html');
-            linkInput.value = customerLink;
+            linkInput.value = CONFIG.BASE_URL;
 
             // Hafta seçimi - bu hafta
             const today = new Date();
