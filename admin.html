@@ -830,19 +830,24 @@
 
                 // Hafta değerinden tarih aralığını hesapla
                 const [year, week] = weekValue.split('-W');
-                const firstDayOfYear = new Date(year, 0, 1);
-                const daysOffset = (week - 1) * 7;
-                const weekStart = new Date(firstDayOfYear.setDate(firstDayOfYear.getDate() + daysOffset));
+                const firstDayOfYear = new Date(parseInt(year), 0, 1);
+                const daysOffset = (parseInt(week) - 1) * 7;
+                const weekStart = new Date(firstDayOfYear.getTime());
+                weekStart.setDate(firstDayOfYear.getDate() + daysOffset);
 
                 // Pazartesi'yi bul
                 const dayOfWeek = weekStart.getDay();
                 const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
                 weekStart.setDate(weekStart.getDate() + diff);
 
-                this.currentWeek = weekStart.toISOString().split('T')[0];
+                // Local timezone'da string'e çevir
+                const y = weekStart.getFullYear();
+                const m = String(weekStart.getMonth() + 1).padStart(2, '0');
+                const d = String(weekStart.getDate()).padStart(2, '0');
+                this.currentWeek = `${y}-${m}-${d}`;
 
                 // Ay verilerini yükle
-                const monthStr = weekStart.toISOString().slice(0, 7);
+                const monthStr = `${y}-${m}`;
 
                 try {
                     const response = await apiCall('getMonthShifts', { month: monthStr });
@@ -914,7 +919,9 @@
 
             render() {
                 const container = document.getElementById('shiftTable');
-                const weekStart = new Date(this.currentWeek);
+                // String'den local timezone'da Date oluştur
+                const [year, month, day] = this.currentWeek.split('-').map(Number);
+                const weekStart = new Date(year, month - 1, day);
                 const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
 
                 let html = '<table class="shift-table"><thead><tr><th>Çalışan</th>';
@@ -962,23 +969,32 @@
 
                 const weeks = {};
                 dates.forEach(dateStr => {
-                    const d = new Date(dateStr);
-                    const day = d.getDay();
-                    const diff = day === 0 ? -6 : 1 - day;
+                    // Local timezone'da Date oluştur
+                    const [year, month, day] = dateStr.split('-').map(Number);
+                    const d = new Date(year, month - 1, day);
+                    const dayOfWeek = d.getDay();
+                    const diff = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
                     const monday = new Date(d);
                     monday.setDate(d.getDate() + diff);
-                    const weekKey = monday.toISOString().split('T')[0];
+
+                    // Local timezone'da string'e çevir
+                    const y = monday.getFullYear();
+                    const m = String(monday.getMonth() + 1).padStart(2, '0');
+                    const dayNum = String(monday.getDate()).padStart(2, '0');
+                    const weekKey = `${y}-${m}-${dayNum}`;
 
                     if (!weeks[weekKey]) weeks[weekKey] = [];
                     weeks[weekKey].push(dateStr);
                 });
 
                 container.innerHTML = Object.keys(weeks).sort().reverse().map(weekStart => {
-                    const weekEnd = new Date(weekStart);
-                    weekEnd.setDate(weekEnd.getDate() + 6);
+                    const [year, month, day] = weekStart.split('-').map(Number);
+                    const weekStartDate = new Date(year, month - 1, day);
+                    const weekEnd = new Date(weekStartDate);
+                    weekEnd.setDate(weekStartDate.getDate() + 6);
                     return `
                         <div style="background:#f8f9fa;padding:15px;border-radius:10px;margin-bottom:10px;border-left:4px solid #667eea;">
-                            <div style="font-weight:600;">📅 ${new Date(weekStart).toLocaleDateString('tr-TR')} - ${weekEnd.toLocaleDateString('tr-TR')}</div>
+                            <div style="font-weight:600;">📅 ${weekStartDate.toLocaleDateString('tr-TR')} - ${weekEnd.toLocaleDateString('tr-TR')}</div>
                             <div style="font-size:13px;color:#666;margin-top:5px;">${weeks[weekStart].length} gün planlandı</div>
                             <button class="btn btn-small" onclick="Shifts.loadWeek('${weekStart}')" style="margin-top:10px;">✏️ Düzenle</button>
                         </div>
@@ -987,7 +1003,16 @@
             },
 
             loadWeek(weekStart) {
-                document.getElementById('weekDate').value = weekStart;
+                // Tarih string'inden (YYYY-MM-DD) week formatına (YYYY-Www) çevir
+                const [year, month, day] = weekStart.split('-').map(Number);
+                const date = new Date(year, month - 1, day);
+
+                // ISO week number hesapla
+                const firstDayOfYear = new Date(year, 0, 1);
+                const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+                const weekNumber = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+
+                document.getElementById('weekDate').value = `${year}-W${String(weekNumber).padStart(2, '0')}`;
                 this.load();
                 UI.switchTab('shifts');
             }
