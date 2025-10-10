@@ -1054,7 +1054,7 @@
                                 <path fill="#79593a" d="M150.9 420.9s2.1-18.3 10.1-25.7c0 0 7.3-10.7 43.3-14.9 0 0 40.7-5.1 78.3 8.6 0 0 11.9 4.5 16.9 14.8 0 0-7.8-17.6-57.2-21 0 0-27.4-2.1-52.4 3-3.5.7-6.9 1.5-10.4 2.2-5.586 2.002-24.1 5.6-28.6 33z"></path>
                             </svg>
             <h2 style="margin: 20px 0 2px; font-size: 14px; font-weight: normal; letter-spacing: 1px; text-align: center; color: #757575; font-family: 'Montserrat', sans-serif;">Rolex İzmir İstinyepark</h2>
-            <p id="staffHeader" style="margin: 0; font-size: 12px; color: #666; text-align: center; visibility: hidden; font-family: 'Montserrat', sans-serif;">-</p>
+            <p id="staffHeader" style="margin: 5px 0 0; font-size: 12px; color: #666; text-align: center; visibility: hidden; font-family: 'Montserrat', sans-serif; text-transform: capitalize;">-</p>
         </div>
 
         <div id="alertContainer"></div>
@@ -1445,9 +1445,18 @@
         // Günün müsaitliğini kontrol et
         function checkDayAvailability(dateStr) {
             // Vardiya kontrolü
-            const hasShifts = dayShifts[dateStr] && Object.keys(dayShifts[dateStr]).length > 0;
-            if (!hasShifts) {
-                return { available: false, reason: 'Çalışan yok' };
+            if (specificStaffId) {
+                // Özel çalışan linki - sadece o çalışanın vardiyasını kontrol et
+                const staffHasShift = dayShifts[dateStr] && dayShifts[dateStr][specificStaffId];
+                if (!staffHasShift) {
+                    return { available: false, reason: 'İlgili çalışan bu gün müsait değil' };
+                }
+            } else {
+                // Genel link - herhangi bir çalışan vardiyası var mı kontrol et
+                const hasShifts = dayShifts[dateStr] && Object.keys(dayShifts[dateStr]).length > 0;
+                if (!hasShifts) {
+                    return { available: false, reason: 'Çalışan yok' };
+                }
             }
 
             // Google Calendar'dan SADECE TESLİM randevularını say
@@ -1462,9 +1471,14 @@
                 }
 
                 // Eğer bugünse ve saat geçmişse sayma
-                if (dateStr === todayStr && event.start?.dateTime) {
-                    const eventStart = new Date(event.start.dateTime);
-                    if (eventStart < now) {
+                if (dateStr === todayStr && event.start) {
+                    // Backend'den gelen time field'ını kullan
+                    const eventTime = event.start.time || (() => {
+                        const t = new Date(event.start.dateTime);
+                        return String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
+                    })();
+                    const currentTime = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+                    if (eventTime < currentTime) {
                         return false;
                     }
                 }
@@ -1754,18 +1768,25 @@
 
                     // Randevu sistemindeki çakışma kontrolü
                     const isBookedInSystem = existingAppointments.some(apt => {
-                        if (!apt.start || !apt.start.dateTime) return false;
-                        const t = new Date(apt.start.dateTime);
-                        const aptTime = String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
+                        if (!apt.start) return false;
+                        // Backend'den gelen time field'ını kullan
+                        const aptTime = apt.start.time || (() => {
+                            const t = new Date(apt.start.dateTime);
+                            return String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
+                        })();
                         return aptTime === timeStr && parseInt(apt.extendedProperties?.private?.staffId) === selectedStaff;
                     });
 
                     // Google Calendar'daki çakışma kontrolü
                     // Aynı saatteki TÜM randevuları say (çalışan farketmeksizin)
                     const sameTimeEvents = calendarEvents.filter(event => {
-                        if (!event.start || !event.start.dateTime) return false;
-                        const t = new Date(event.start.dateTime);
-                        const eventTime = String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
+                        if (!event.start) return false;
+                        // Backend'den gelen time field'ını kullan (HH:mm formatında, Türkiye saati)
+                        const eventTime = event.start.time || (() => {
+                            // Fallback: dateTime'dan parse et
+                            const t = new Date(event.start.dateTime);
+                            return String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
+                        })();
                         return eventTime === timeStr;
                     });
 
@@ -2273,7 +2294,7 @@
                                 <path fill="#79593a" d="M150.9 420.9s2.1-18.3 10.1-25.7c0 0 7.3-10.7 43.3-14.9 0 0 40.7-5.1 78.3 8.6 0 0 11.9 4.5 16.9 14.8 0 0-7.8-17.6-57.2-21 0 0-27.4-2.1-52.4 3-3.5.7-6.9 1.5-10.4 2.2-5.586 2.002-24.1 5.6-28.6 33z"></path>
                             </svg>
                     <h2 style="margin: 20px 0 2px; font-size: 14px; font-weight: normal; letter-spacing: 1px; text-align: center; color: #757575; font-family: 'Montserrat', sans-serif;">Rolex İzmir İstinyepark</h2>
-                    <p style="margin: 0; font-size: 12px; color: #666; text-align: center; font-family: 'Montserrat', sans-serif;">${staffName}</p>
+                    <p style="margin: 5px 0 0; font-size: 12px; color: #666; text-align: center; font-family: 'Montserrat', sans-serif; text-transform: capitalize;">${staffName}</p>
                 </div>
 
                 <div class="success-container">
