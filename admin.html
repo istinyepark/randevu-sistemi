@@ -937,7 +937,11 @@
                     for (let i = 0; i < 7; i++) {
                         const d = new Date(weekStart);
                         d.setDate(weekStart.getDate() + i);
-                        const dateKey = d.toISOString().split('T')[0];
+                        // Local timezone'da tarih formatla (UTC kayması olmasın)
+                        const year = d.getFullYear();
+                        const month = String(d.getMonth() + 1).padStart(2, '0');
+                        const day = String(d.getDate()).padStart(2, '0');
+                        const dateKey = `${year}-${month}-${day}`;
                         const current = Data.shifts[dateKey]?.[staff.id] || '';
 
                         html += '<td><select class="shift-select" data-staff="' + staff.id + '" data-date="' + dateKey + '">';
@@ -1047,9 +1051,17 @@
                 }
 
                 try {
+                    // Local timezone'da tarih formatla
+                    const formatLocalDate = (d) => {
+                        const year = d.getFullYear();
+                        const month = String(d.getMonth() + 1).padStart(2, '0');
+                        const day = String(d.getDate()).padStart(2, '0');
+                        return `${year}-${month}-${day}`;
+                    };
+
                     const result = await apiCall('getWeekAppointments', {
-                        startDate: startDate.toISOString().split('T')[0],
-                        endDate: endDate.toISOString().split('T')[0]
+                        startDate: formatLocalDate(startDate),
+                        endDate: formatLocalDate(endDate)
                     });
 
                     if (result.error) {
@@ -1090,7 +1102,11 @@
                 const byDate = {};
                 appointments.forEach(apt => {
                     const start = new Date(apt.start.dateTime || apt.start.date);
-                    const dateKey = start.toISOString().split('T')[0];
+                    // Local timezone'da tarih formatla
+                    const year = start.getFullYear();
+                    const month = String(start.getMonth() + 1).padStart(2, '0');
+                    const day = String(start.getDate()).padStart(2, '0');
+                    const dateKey = `${year}-${month}-${day}`;
                     if (!byDate[dateKey]) byDate[dateKey] = [];
                     byDate[dateKey].push(apt);
                 });
